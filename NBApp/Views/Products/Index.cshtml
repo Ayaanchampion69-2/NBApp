@@ -1,0 +1,7 @@
+﻿@model IEnumerable<Products>
+@{
+    ViewData["Title"] = "Products";
+    var categories = ViewBag.Category as List<NBApp.Models.Category>;
+    var currentCategory = ViewBag.CurrentCategory as int?;
+    var searchString = ViewBag.SearchString as string;
+}

@@ -5,6 +5,7 @@ namespace NBApp.Models
 {
     public class OrderItem
     {
+        [Key]
         public int OrderItemId { get; set; }
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]

@@ -31,3 +31,4 @@ namespace NBApp.Models
         public List<OrderItem> OrderItems { get; set; } = new();
     }
 }
+//continue video at 1.39.18 time

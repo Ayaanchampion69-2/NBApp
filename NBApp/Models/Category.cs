@@ -3,6 +3,7 @@ namespace NBApp.Models
 {
    public class Category
    {
+        [Key]
      public int CategoryId { get; set; }
      [Required]
      [StringLength(100)]
