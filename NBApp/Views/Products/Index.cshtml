@@ -5,3 +5,101 @@
     var currentCategory = ViewBag.CurrentCategory as int?;
     var searchString = ViewBag.SearchString as string;
 }
+<div class="mb-8 flex flex-col sm:flex-row gap-4">
+    <form asp-action="Index" method="get" class="flex-1 flex gap-2">
+        <div class="relative flex-1">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <input type="text" name="searchString" value="@searchString" placeholder="Search products..."
+                   class="block w-full rounded-md border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+        </div>
+        <button type="submit" class="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200">
+            Search
+        </button>
+    </form>
+@if (!Model.Any())
+{
+        <div class="rounded-md bg-blue-50 p-6 text-center">
+            <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <p class="mt-2 text-sm text-gray-600">No products found.</p>
+        </div>
+
+}
+else
+{
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        @foreach (var product in Model)
+        {
+            <div class="group relative bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                <div class="aspect-square w-full overflow-hidden bg-gray-200">
+                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <img src="@product.ImageUrl" alt="@product.Name" class="h-full w-full object-cover object-center group-hover:opacity-75" />
+                    }
+                    else
+                    {
+                        <div class="h-full w-full flex items-center justify-center">
+                            <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                            </svg>
+                        </div>
+                    }
+                </div>
+
+                <div class="flex flex-1 flex-col p-4">
+                    <span class="text-xs font-medium text-indigo-600">@product.Category.Name</span>
+                    <h3 class="mt-1 text-lg font-semibold text-gray-900">@product.Name</h3>
+                    <p class="mt-1 text-sm text-gray-500 line-clamp-2">@product.Description</p>
+
+                    <div class="mt-auto pt-4">
+                        <p class="text-xl font-bold text-gray-900">@product.Price?.ToString("C")</p>
+
+                        <div class="mt-2">
+                            @if (product.StockQuantity > 0)
+                            {
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                    <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
+                                        <circle cx="4" cy="4" r="3" />
+                                    </svg>
+                                    In Stock (@product.StockQuantity)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                                    <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
+                                        <circle cx="4" cy="4" r="3" />
+                                    </svg>
+                                    Out of Stock
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex gap-2">
+                        <a asp-action="Details" asp-route-id="@product.ProductId" class="flex-1 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">
+                            Details
+                        </a>
+                        @if (product.StockQuantity > 0)
+                        {
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-1">
+                                <input type="hidden" name="productId" value="@product.ProductId" />
+                                <button type="submit" class="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 flex items-center justify-center">
+                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                    Add
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
