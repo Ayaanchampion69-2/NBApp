@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\SQL\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
