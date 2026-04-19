@@ -20,7 +20,7 @@ public class NBAppContext : IdentityDbContext<NBAppUser>
         // Add your customizations after calling base.OnModelCreating(builder);
     }*/
 
-public DbSet<NBApp.Models.Order> Order { get; set; } = default!;
+public DbSet<NBApp.Models.Order> Orders { get; set; } = default!;
 public DbSet<NBApp.Models.OrderItem> OrderItem { get; set; } = default!;
     public DbSet<NBApp.Models.Products> Products { get; set; } = default!;
     public DbSet<NBApp.Models.Category> Categories { get; set; } = default!;

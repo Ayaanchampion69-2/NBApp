@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
@@ -27,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\SQL\" />
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

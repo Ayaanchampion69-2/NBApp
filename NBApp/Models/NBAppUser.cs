@@ -9,7 +9,7 @@ namespace NBApp.Models;
 // Add profile data for application users by adding properties to the NBAppUser class
 public class NBAppUser : IdentityUser
 {
-    public List<Order> Orders { get; set; } = new();
-    
+    public List<Order> Orders { get; set; } = new();// creates a one-to-many relationship between NBAppUser and Order, where one user can have multiple orders.
+
 }
 

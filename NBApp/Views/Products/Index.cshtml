@@ -1,10 +1,12 @@
-﻿@model IEnumerable<Products>
+﻿﻿@model IEnumerable<NBApp.Models.Products>
+
 @{
     ViewData["Title"] = "Products";
-    var categories = ViewBag.Category as List<NBApp.Models.Category>;
+    var categories = ViewBag.Categories as List<NBApp.Models.Category>;
     var currentCategory = ViewBag.CurrentCategory as int?;
     var searchString = ViewBag.SearchString as string;
 }
+
 <div class="mb-8 flex flex-col sm:flex-row gap-4">
     <form asp-action="Index" method="get" class="flex-1 flex gap-2">
         <div class="relative flex-1">
@@ -20,17 +22,35 @@
             Search
         </button>
     </form>
+
+    <form asp-action="Index" method="get" class="sm:w-64">
+        <select name="categoryId" onchange="this.form.submit()"
+                class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+            <option value="">All Categories</option>
+            @if (categories != null)
+            {
+                @foreach (var category in categories)
+                {
+                    <option value="@category.CategoryId" selected="@(currentCategory == category.CategoryId)">
+                        @category.Name
+                    </option>
+                }
+            }
+        </select>
+    </form>
+
+ </div>
+
 @if (!Model.Any())
 {
-        <div class="rounded-md bg-blue-50 p-6 text-center">
-            <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <p class="mt-2 text-sm text-gray-600">No products found.</p>
-        </div>
-
+    <div class="rounded-md bg-blue-50 p-6 text-center">
+        <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+        <p class="mt-2 text-sm text-gray-600">No products found.</p>
+    </div>
 }
- else
+else
 {
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @foreach (var product in Model)

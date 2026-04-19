@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace NBApp.Controllers
 {
-    [Authorize] 
+    [Authorize]
     public class OrdersController : Controller
     {
         private readonly NBAppContext _context;
@@ -22,14 +22,19 @@ namespace NBApp.Controllers
             _context = context;
         }
 
-        // GET: Orders
+        // GET: Order
         public async Task<IActionResult> Index()
         {
-            var nBAppContext = _context.Order.Include(o => o.User);
-            return View(await nBAppContext.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userOrders = _context.Orders
+                .Where(o => o.UserId == userId)
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product);
+            return View(await userOrders.ToListAsync());
         }
 
-        // GET: Orders/Details/5
+        // GET: Order/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -37,7 +42,7 @@ namespace NBApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
+            var order = await _context.Orders
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
@@ -48,32 +53,34 @@ namespace NBApp.Controllers
             return View(order);
         }
 
-        // GET: Orders/Create
+        // GET: Order/Create
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Orders/Create
+        // POST: Order/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,OrderDate,TotalAmount,UserId")] Order order)
+        public async Task<IActionResult> Create([Bind("OrderId,OrderDate,TotalAmount")] Order order)
         {
+            // Set the user ID from the currently authenticated user
             order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (ModelState.IsValid)
-            {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+
+            //if (ModelState.IsValid)
+            //{
+            _context.Add(order);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+            // }
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
             return View(order);
         }
 
-        // GET: Orders/Edit/5
+        // GET: Order/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,7 +88,7 @@ namespace NBApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order.FindAsync(id);
+            var order = await _context.Orders.FindAsync(id);
             if (order == null)
             {
                 return NotFound();
@@ -90,7 +97,7 @@ namespace NBApp.Controllers
             return View(order);
         }
 
-        // POST: Orders/Edit/5
+        // POST: Order/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -126,7 +133,7 @@ namespace NBApp.Controllers
             return View(order);
         }
 
-        // GET: Orders/Delete/5
+        // GET: Order/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,7 +141,7 @@ namespace NBApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
+            var order = await _context.Orders
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
@@ -145,15 +152,15 @@ namespace NBApp.Controllers
             return View(order);
         }
 
-        // POST: Orders/Delete/5
+        // POST: Order/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Order.FindAsync(id);
+            var order = await _context.Orders.FindAsync(id);
             if (order != null)
             {
-                _context.Order.Remove(order);
+                _context.Orders.Remove(order);
             }
 
             await _context.SaveChangesAsync();
@@ -162,7 +169,7 @@ namespace NBApp.Controllers
 
         private bool OrderExists(int id)
         {
-            return _context.Order.Any(e => e.OrderId == id);
+            return _context.Orders.Any(e => e.OrderId == id);
         }
     }
 }
