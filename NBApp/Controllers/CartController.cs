@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NBApp.Areas.Identity.Data;
+using NBApp.Extensions;
+
 using NBApp.Models;
 using NBApp.ViewModels;
-using NBApp.Extensions
 using System.Security.Claims;
-using NBApp.Areas.Identity.Data;
 using static NBApp.Models.Order;
 
 
