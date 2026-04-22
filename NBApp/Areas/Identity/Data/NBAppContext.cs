@@ -24,7 +24,8 @@ public DbSet<NBApp.Models.Order> Orders { get; set; } = default!;
 public DbSet<NBApp.Models.OrderItem> OrderItem { get; set; } = default!;
     public DbSet<NBApp.Models.Products> Products { get; set; } = default!;
     public DbSet<NBApp.Models.Category> Categories { get; set; } = default!;
-    
+    public DbSet<NBApp.Models.ShippingAddress> ShippingAddresses { get; set; } = default!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

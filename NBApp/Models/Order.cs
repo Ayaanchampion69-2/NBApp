@@ -19,8 +19,12 @@ namespace NBApp.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
-        [StringLength(500)]
-        public string? ShippingAddress { get; set; }
+        //[StringLength(500)]
+        //public string? ShippingAddress { get; set; }
+
+        [ValidateNever]
+        public ShippingAddress ShippingAddress { get; set; }
+        public string ShippingAddressId { get; set; }
 
         [ValidateNever]
         public NBAppUser User { get; set; }

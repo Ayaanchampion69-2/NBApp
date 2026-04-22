@@ -1,5 +1,7 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.FlowAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
@@ -29,7 +31,9 @@ builder.Services.AddSession(options =>
 builder.Services.AddControllersWithViews();
 
 // This automatically scans your project and registers all validators it finds
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services
+    .AddValidatorsFromAssemblyContaining<Program>();
+    
 
 var app = builder.Build();
 app.UseStaticFiles();

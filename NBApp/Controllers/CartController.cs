@@ -134,7 +134,7 @@ namespace NBApp.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlaceOrder(string? shippingAddress)
+        public async Task<IActionResult> PlaceOrder(string? buildingNumber, string? street, string? city, string? postalCode)
         {
             var cart = GetCart();
             if (cart.IsEmpty)
@@ -156,8 +156,17 @@ namespace NBApp.Controllers
                 OrderDate = DateTime.Now,
                 TotalAmount = cart.Total,
                 Status = OrderStatus.Pending,
-                ShippingAddress = shippingAddress
+                ShippingAddress = $"{buildingNumber}, {street}, {city}, {postalCode}"
             };
+            var ShippingAddress = new ShippingAddress
+            {
+                BuildingNumber = buildingNumber ?? string.Empty,
+                Street = street ?? string.Empty,
+                City = city ?? string.Empty,
+                PostalCode = postalCode ?? string.Empty,
+                Order = order
+            };
+
 
             // Add order items
             foreach (var cartItem in cart.Items)
@@ -178,6 +187,7 @@ namespace NBApp.Controllers
             }
 
             _context.Orders.Add(order);
+            _context.ShippingAddresses.Add(ShippingAddress);
             await _context.SaveChangesAsync();
 
             // Clear the cart
