@@ -8,9 +8,11 @@ namespace NBApp.Controllers
     public class ProductController : Controller
     {
         private readonly NBAppContext _context;
-        public ProductController(NBAppContext context)
+        private readonly IWebHostEnvironment _environment;
+        public ProductController(NBAppContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
         public async Task<IActionResult> Index(int? categoryId, string? searchString)
         {
@@ -30,6 +32,15 @@ namespace NBApp.Controllers
             ViewBag.CurrentCategoryId = categoryId;
             ViewBag.CurrentSearchString = searchString;
             return View(await productsQuery.ToListAsync());
+        }
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Create(ProductsDto productsDto)
+        {
+            return View();
         }
     }
 }
