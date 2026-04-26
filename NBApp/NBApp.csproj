@@ -32,6 +32,8 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\SQL\" />
+    <Folder Include="wwwroot\css\ProfilePictures\" />
+    <Folder Include="wwwroot\Products\" />
   </ItemGroup>
 
 </Project>

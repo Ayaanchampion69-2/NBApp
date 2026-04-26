@@ -6,7 +6,9 @@
     var currentCategory = ViewBag.CurrentCategory as int?;
     var searchString = ViewBag.SearchString as string;
 }
-
+<div>
+    <a asp-controller="Product" asp-action="Create">Create</a>
+</div>
 <div class="mb-8 flex flex-col sm:flex-row gap-4">
     <form asp-action="Index" method="get" class="flex-1 flex gap-2">
         <div class="relative flex-1">
@@ -105,6 +107,8 @@ else
                         <a asp-action="Details" asp-route-id="@product.ProductId" class="flex-1 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">
                             Details
                         </a>
+                        <a asp-controller ="Product"asp-action="Edit" asp-route-id="@product.ProductId">Edit</a>
+                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId">Delete</a>
                         @if (product.StockQuantity > 0)
                         {
                             <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-1">

@@ -1,0 +1,151 @@
+﻿@using NBApp.Models
+@model ProductsDto
+
+@{
+    ViewData["Title"] = "Edit";
+}
+@*CRUD image vid at 41.55 continue from there*@
+
+<div class="max-w-2xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Product</h1>
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        <div>
+            <label asp-for="Name" class="block text-sm font-medium text-gray-700 mb-1"></label>
+            <input asp-for="Name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            <span asp-validation-for="Name" class="text-red-600 text-sm"></span>
+        </div>
+        <div>
+            <label asp-for="Description" class="block text-sm font-medium text-gray-700 mb-1"></label>
+            <textarea asp-for="Description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <span asp-validation-for="Description" class="text-red-600 text-sm"></span>
+        </div>
+        <div>
+            <label asp-for="SKUNumber" class="block text-sm font-medium text-gray-700 mb-1"></label>
+            <input asp-for="SKUNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="XXX-0000" />
+            <span class="text-gray-500 text-xs">Format: 3 uppercase letters, hyphen, 4 digits (e.g., ABC-1234)</span>
+            <span asp-validation-for="SKUNumber" class="text-red-600 text-sm block"></span>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label asp-for="Price" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="Price" type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="Price" class="text-red-600 text-sm"></span>
+            </div>
+            <div>
+                <label asp-for="SalePrice" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="SalePrice" type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SalePrice" class="text-red-600 text-sm"></span>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label asp-for="StockQuantity" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="StockQuantity" type="number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="StockQuantity" class="text-red-600 text-sm"></span>
+            </div>
+            <div>
+                <label asp-for="ReleaseDate" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="ReleaseDate" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <span class="text-gray-500 text-xs">Must be on or before January 1, 2026</span>
+                <span asp-validation-for="ReleaseDate" class="text-red-600 text-sm block"></span>
+            </div>
+            <div>
+                <label asp-for="ImageFile" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <input asp-for="ImageFile" type="file" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="ImageFile" class="text-red-600 text-sm"></span>
+            </div>
+            <div>
+                <label asp-for="CategoryId" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select Category --</option>
+
+                </select>
+                <span asp-validation-for="CategoryId" class="text-red-600 text-sm"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <input asp-for="IsActive" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                <label asp-for="IsActive" class="text-sm font-medium text-gray-700"></label>
+            </div>
+
+        </div>
+
+
+
+        <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+            Create
+        </button>
+        <a asp-controller="Product" asp-action="Index" role="button">Cancel</a>
+    </form>
+</div>
+
+                
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+
+            // Fields that require server-side validation on blur
+            const fieldsToValidate = ['Name', 'SKUNumber', 'SalePrice'];
+
+            /**
+             * Updates the visual state of a form field based on validation result.
+             * @@param {HTMLElement} field - The input element to style
+             * @@param {HTMLElement} errorSpan - The span element for error messages
+             * @@param {boolean} isValid - Whether the field passed validation
+             * @@param {string[]} errors - Array of error messages to display
+             */
+            const setFieldState = (field, errorSpan, isValid, errors = []) => {
+                // Toggle border color: red for invalid, gray for valid
+                field.classList.toggle('border-red-500', !isValid);
+                field.classList.toggle('border-gray-300', isValid);
+
+                if (errorSpan) {
+                    // Show error messages or clear them
+                    errorSpan.textContent = isValid ? '' : errors.join(', ');
+                    errorSpan.classList.toggle('hidden', isValid);
+                }
+            };
+
+            // Use event delegation with capture phase to handle blur on all form fields
+            //Event travels down from form → target element
+            form.addEventListener('blur', async (e) => {
+                const fieldName = e.target.id;
+
+                // Only validate fields in our allowlist
+                if (!fieldsToValidate.includes(fieldName)) return;
+
+                // Build payload with current form values for server-side validation
+                const data = {
+                    fieldName,
+                    productId: parseInt(form.querySelector('[name="ProductId"]')?.value) || 0,
+                    name: form.querySelector('[name="Name"]')?.value || '',
+                    skuNumber: form.querySelector('[name="SKUNumber"]')?.value || '',
+                    price: parseFloat(form.querySelector('[name="Price"]')?.value) || null,
+                    salePrice: parseFloat(form.querySelector('[name="SalePrice"]')?.value) || null
+                };
+
+                try {
+                    // Send validation request to server
+                    const response = await fetch('@Url.Action("ValidateField", "Product")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Include anti-forgery token for security
+                            'RequestVerificationToken': form.querySelector('[name="__RequestVerificationToken"]')?.value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    // Destructure response and update field styling
+                    const { isValid, errors } = await response.json();
+                    setFieldState(e.target, document.querySelector(`[data-valmsg-for="${fieldName}"]`), isValid, errors);
+                } catch (error) {
+                    console.error('Validation error:', error);
+                }
+            }, true); // 'true' allows blur event from child elements to be captured at the form level
+        });
+    </script>
+}

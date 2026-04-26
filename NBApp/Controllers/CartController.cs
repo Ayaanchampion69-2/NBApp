@@ -149,6 +149,15 @@ namespace NBApp.Controllers
                 return Unauthorized();
             }
 
+            // Create the shipping address
+            var shippingAddress = new ShippingAddress
+            {
+                BuildingNumber = buildingNumber ?? string.Empty,
+                Street = street ?? string.Empty,
+                City = city ?? string.Empty,
+                PostalCode = postalCode ?? string.Empty
+            };
+
             // Create the order
             var order = new Order
             {
@@ -156,15 +165,7 @@ namespace NBApp.Controllers
                 OrderDate = DateTime.Now,
                 TotalAmount = cart.Total,
                 Status = OrderStatus.Pending,
-                ShippingAddress = $"{buildingNumber}, {street}, {city}, {postalCode}"
-            };
-            var ShippingAddress = new ShippingAddress
-            {
-                BuildingNumber = buildingNumber ?? string.Empty,
-                Street = street ?? string.Empty,
-                City = city ?? string.Empty,
-                PostalCode = postalCode ?? string.Empty,
-                Order = order
+                ShippingAddress = shippingAddress
             };
 
 
@@ -187,7 +188,6 @@ namespace NBApp.Controllers
             }
 
             _context.Orders.Add(order);
-            _context.ShippingAddresses.Add(ShippingAddress);
             await _context.SaveChangesAsync();
 
             // Clear the cart

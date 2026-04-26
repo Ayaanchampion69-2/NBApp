@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 
 namespace NBApp.Models
 {
@@ -15,16 +16,16 @@ namespace NBApp.Models
          Cancelled
         }
         public int OrderId { get; set; }
+        
         public DateTime OrderDate { get; set; } = DateTime.Today;
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
-        //[StringLength(500)]
-        //public string? ShippingAddress { get; set; }
 
         [ValidateNever]
         public ShippingAddress ShippingAddress { get; set; }
-        public string ShippingAddressId { get; set; }
+        [ForeignKey("ShippingAddress")]
+        public int? ShippingAddressId { get; set; }
 
         [ValidateNever]
         public NBAppUser User { get; set; }

@@ -25,7 +25,7 @@ namespace NBApp.Models
         public decimal? SalePrice { get; set; }
 
         [StringLength(500)]
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
         public DateTime? ReleaseDate { get; set; }
 

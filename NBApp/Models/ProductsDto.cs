@@ -9,7 +9,7 @@ namespace NBApp.Models
         [Required]
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;
-
+        [Required]
         [StringLength(1000)]
         public string? Description { get; set; } = string.Empty;
 
@@ -22,16 +22,16 @@ namespace NBApp.Models
 
         [StringLength(500)]
         public IFormFile? ImageFile { get; set; }
-
+        [Required]
         public DateTime? ReleaseDate { get; set; }
 
 
         [Required]
         [Range(0, int.MaxValue)]
         public int? StockQuantity { get; set; }
-
+        [Required]
         public bool IsActive { get; set; } = true;
-
+        [Required]
         public string? SKUNumber { get; set; }
 
         // Foreign key

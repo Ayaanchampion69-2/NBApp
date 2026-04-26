@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NBApp.Areas.Identity.Data;
 
@@ -11,9 +12,11 @@ using NBApp.Areas.Identity.Data;
 namespace NBApp.Migrations
 {
     [DbContext(typeof(NBAppContext))]
-    partial class NBAppContextModelSnapshot : ModelSnapshot
+    [Migration("20260424022311_aah")]
+    partial class aah
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,8 +274,9 @@ namespace NBApp.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ShippingAddressId")
-                        .HasColumnType("int");
+                    b.Property<string>("ShippingAddressId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -285,10 +289,6 @@ namespace NBApp.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("OrderId");
-
-                    b.HasIndex("ShippingAddressId")
-                        .IsUnique()
-                        .HasFilter("[ShippingAddressId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -413,6 +413,9 @@ namespace NBApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -421,6 +424,9 @@ namespace NBApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ShipID");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
                     b.ToTable("ShippingAddresses");
                 });
@@ -478,17 +484,11 @@ namespace NBApp.Migrations
 
             modelBuilder.Entity("NBApp.Models.Order", b =>
                 {
-                    b.HasOne("NBApp.Models.ShippingAddress", "ShippingAddress")
-                        .WithOne("Order")
-                        .HasForeignKey("NBApp.Models.Order", "ShippingAddressId");
-
                     b.HasOne("NBApp.Models.NBAppUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ShippingAddress");
 
                     b.Navigation("User");
                 });
@@ -521,6 +521,17 @@ namespace NBApp.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("NBApp.Models.ShippingAddress", b =>
+                {
+                    b.HasOne("NBApp.Models.Order", "Order")
+                        .WithOne("ShippingAddress")
+                        .HasForeignKey("NBApp.Models.ShippingAddress", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("NBApp.Models.Category", b =>
                 {
                     b.Navigation("Products");
@@ -534,17 +545,14 @@ namespace NBApp.Migrations
             modelBuilder.Entity("NBApp.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("ShippingAddress")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("NBApp.Models.Products", b =>
                 {
                     b.Navigation("OrderItems");
-                });
-
-            modelBuilder.Entity("NBApp.Models.ShippingAddress", b =>
-                {
-                    b.Navigation("Order")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

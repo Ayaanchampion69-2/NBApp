@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
+using NBApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,13 +45,29 @@ namespace NBApp.Controllers
 
             var order = await _context.Orders
                 .Include(o => o.User)
+                .Include(o => o.ShippingAddress)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            var viewModel = new OrderViewModel
+            {
+                OrderId = order.OrderId,
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                User = new UserViewModel { Id = order.User?.Id },
+                ShippingAddress = new AddressViewModel
+                {
+                    BuildingNumber = order.ShippingAddress?.BuildingNumber,
+                    Street = order.ShippingAddress?.Street,
+                    City = order.ShippingAddress?.City,
+                    PostalCode = order.ShippingAddress?.PostalCode
+                }
+            };
+
+            return View(viewModel);
         }
 
         // GET: Order/Create

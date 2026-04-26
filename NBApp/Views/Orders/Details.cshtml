@@ -1,4 +1,4 @@
-﻿@model NBApp.Models.Order
+﻿@model NBApp.ViewModels.OrderViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -27,6 +27,21 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.User.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ShippingAddress)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ShippingAddress.BuildingNumber)
+        </dd>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ShippingAddress.Street)
+        </dd>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ShippingAddress.City)
+        </dd>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ShippingAddress.PostalCode)
         </dd>
     </dl>
 </div>
