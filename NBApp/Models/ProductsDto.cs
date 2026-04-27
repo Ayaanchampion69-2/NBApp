@@ -23,7 +23,7 @@ namespace NBApp.Models
         [StringLength(500)]
         public IFormFile? ImageFile { get; set; }
         [Required]
-        public DateTime? ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; } = DateTime.Today;
 
 
         [Required]
