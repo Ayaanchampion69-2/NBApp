@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using NBApp.Models;
+using NBApp.Validators;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,7 +27,7 @@ namespace NBApp.Models
 
         [StringLength(500)]
         public string? ImageUrl { get; set; }
-
+        [NoReleaseDateInPast(ErrorMessage = "Release Date cannot be before today.")]
         public DateTime? ReleaseDate { get; set; } = DateTime.Today;
 
 

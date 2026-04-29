@@ -76,16 +76,30 @@ namespace NBApp.Controllers
             };
             _context.Products.Add(product);
             _context.SaveChanges();
-            return RedirectToAction("Index", "Products");
+            return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Edit(int ProductId)
+        public async Task<IActionResult> Details(int id)
         {
-            var product = _context.Products.Find(ProductId);
+            var product = _context.Products
+                .Include(p => p.Category)
+                .FirstOrDefault(p => p.ProductId == id);
 
             if (product == null)
             {
-                return RedirectToAction("Index", "Products");
+                return RedirectToAction("Index");
+            }
+
+            return View(product);
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var product = _context.Products.Find(id);
+
+            if (product == null)
+            {
+                return RedirectToAction("Index");
             }
             //create productdto from product
             var ProductDto = new ProductsDto()
@@ -101,7 +115,7 @@ namespace NBApp.Controllers
                 SKUNumber = product.SKUNumber,
                 CategoryId = product.CategoryId
             };
-            ViewData["ProductId"] = ProductId;
+            ViewData["ProductId"] = id;
             ViewData["imageUrl"] = product.ImageUrl;
             ViewData["ReleaseDate"] = product.ReleaseDate?.ToString("yyyy-MM-dd");
             ViewBag.Categories = await _context.Categories.ToListAsync();
@@ -111,29 +125,29 @@ namespace NBApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int ProductId, ProductsDto productsDto)
+        public IActionResult Edit(int id, ProductsDto productsDto)
         {
-            var product = _context.Products.Find(ProductId);
+            var product = _context.Products.Find(id);
 
             if (product == null)
             {
-                return RedirectToAction("Index", "Products");
+                return RedirectToAction("Index");
             }
 
             if (!ModelState.IsValid)
             {
-                ViewData["ProductId"] = ProductId;
+                ViewData["ProductId"] = id;
                 ViewData["imageUrl"] = product.ImageUrl;
                 ViewData["ReleaseDate"] = product.ReleaseDate?.ToString("yyyy-MM-dd");
+                ViewBag.Categories = _context.Categories.ToList();
                 return View(productsDto);
-
             }
 
             //update image if new image is uploaded
-            string NewFileName = product.ImageUrl;
+            string imageUrl = product.ImageUrl ?? string.Empty;
             if(productsDto.ImageFile != null)
-                {
-                NewFileName = DateTime.Now.ToString("yyyyMMMMddHHmmss");
+            {
+                string NewFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
                 NewFileName += Path.GetExtension(productsDto.ImageFile.FileName);
 
                 string imageFullPath = _environment.WebRootPath + "/Products/" + NewFileName;
@@ -142,16 +156,24 @@ namespace NBApp.Controllers
                     productsDto.ImageFile.CopyTo(stream);
                 }
                 //delete old image
-                string oldImageFullPath = _environment.WebRootPath + "/Products/" + product.ImageUrl;
-                System.IO.File.Delete(oldImageFullPath);
+                if (!string.IsNullOrEmpty(product.ImageUrl) && !product.ImageUrl.StartsWith("http"))
+                {
+                    string oldImageFullPath = _environment.WebRootPath + product.ImageUrl;
+                    if (System.IO.File.Exists(oldImageFullPath))
+                    {
+                        System.IO.File.Delete(oldImageFullPath);
+                    }
+                }
 
+                imageUrl = "/Products/" + NewFileName;
             }
+
             //update product properties
             product.Name = productsDto.Name;
             product.Description = productsDto.Description;
             product.Price = productsDto.Price;
             product.SalePrice = productsDto.SalePrice;
-            product.ImageUrl = NewFileName;
+            product.ImageUrl = imageUrl;
             product.ReleaseDate = productsDto.ReleaseDate;
             product.StockQuantity = productsDto.StockQuantity;
             product.IsActive = productsDto.IsActive;
@@ -160,26 +182,33 @@ namespace NBApp.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Index", "Products");
+            return RedirectToAction("Index");
         }
     
 
-    public IActionResult Delete(int ProductId)
+    public IActionResult Delete(int id)
+    {
+        var product = _context.Products.Find(id);
+        if (product == null)
         {
-            var product = _context.Products.Find(ProductId);
-            if (product == null)
-            {
-                return RedirectToAction("Index", "Products");
-            }
-            string imageFullPath = _environment.WebRootPath+"/Products/"+product.ImageUrl;
-            System.IO.File.Delete(imageFullPath);
-
-            _context.Products.Remove(product);
-            _context.SaveChanges(true);
-
-            return RedirectToAction("Index", "Products");
-
+            return RedirectToAction("Index");
         }
+
+        //delete old image
+        if (!string.IsNullOrEmpty(product.ImageUrl) && !product.ImageUrl.StartsWith("http"))
+        {
+            string imageFullPath = _environment.WebRootPath + product.ImageUrl;
+            if (System.IO.File.Exists(imageFullPath))
+            {
+                System.IO.File.Delete(imageFullPath);
+            }
+        }
+
+        _context.Products.Remove(product);
+        _context.SaveChanges();
+
+        return RedirectToAction("Index");
+    }
             
             
         }

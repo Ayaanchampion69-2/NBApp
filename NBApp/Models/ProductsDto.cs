@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NBApp.Validators;
 
 namespace NBApp.Models
 {
@@ -23,6 +24,8 @@ namespace NBApp.Models
         //[StringLength(500)]
         public IFormFile ImageFile { get; set; }
         [Required]
+        [DataType(DataType.Date)]
+        [NoReleaseDateInPast(ErrorMessage = "Release Date cannot be before today.")]
         public DateTime? ReleaseDate { get; set; } = DateTime.Today;
 
 

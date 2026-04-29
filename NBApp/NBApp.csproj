@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Products\ChocIceCream.jpg" />
+    <Content Remove="wwwroot\Products\MangoIceBlock.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Areas\Identity\Data\DbInitializer.cs" />
   </ItemGroup>
 
