@@ -35,8 +35,9 @@ namespace NBApp.Controllers
             ViewBag.CurrentSearchString = searchString;
             return View(await productsQuery.ToListAsync());
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Categories = await _context.Categories.ToListAsync();
             return View();
         }
         [HttpPost]
@@ -78,7 +79,7 @@ namespace NBApp.Controllers
             return RedirectToAction("Index", "Products");
         }
 
-        public IActionResult Edit(int ProductId)
+        public async Task<IActionResult> Edit(int ProductId)
         {
             var product = _context.Products.Find(ProductId);
 
@@ -103,6 +104,7 @@ namespace NBApp.Controllers
             ViewData["ProductId"] = ProductId;
             ViewData["imageUrl"] = product.ImageUrl;
             ViewData["ReleaseDate"] = product.ReleaseDate?.ToString("yyyy-MM-dd");
+            ViewBag.Categories = await _context.Categories.ToListAsync();
 
             return View(ProductDto);
 
@@ -128,37 +130,28 @@ namespace NBApp.Controllers
             }
 
             //update image if new image is uploaded
-            string imageUrl = product.ImageUrl ?? string.Empty;
-            if (productsDto.ImageFile != null)
-            {
-                string NewFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string NewFileName = product.ImageUrl;
+            if(productsDto.ImageFile != null)
+                {
+                NewFileName = DateTime.Now.ToString("yyyyMMMMddHHmmss");
                 NewFileName += Path.GetExtension(productsDto.ImageFile.FileName);
-                string imageFullPath = Path.Combine(_environment.WebRootPath, "Products", NewFileName);
+
+                string imageFullPath = _environment.WebRootPath + "/Products/" + NewFileName;
                 using (var stream = System.IO.File.Create(imageFullPath))
                 {
                     productsDto.ImageFile.CopyTo(stream);
                 }
                 //delete old image
-                if (!string.IsNullOrEmpty(product.ImageUrl))
-                {
-                    // product.ImageUrl may be stored as "/Products/filename" - build physical path correctly
-                    var oldRelative = product.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
-                    string oldImageFullPath = Path.Combine(_environment.WebRootPath, oldRelative);
-                    if (System.IO.File.Exists(oldImageFullPath))
-                    {
-                        System.IO.File.Delete(oldImageFullPath);
-                    }
-                }
+                string oldImageFullPath = _environment.WebRootPath + "/Products/" + product.ImageUrl;
+                System.IO.File.Delete(oldImageFullPath);
 
-                imageUrl = "/Products/" + NewFileName;
             }
-
             //update product properties
             product.Name = productsDto.Name;
             product.Description = productsDto.Description;
             product.Price = productsDto.Price;
             product.SalePrice = productsDto.SalePrice;
-            product.ImageUrl = imageUrl;
+            product.ImageUrl = NewFileName;
             product.ReleaseDate = productsDto.ReleaseDate;
             product.StockQuantity = productsDto.StockQuantity;
             product.IsActive = productsDto.IsActive;
@@ -178,19 +171,17 @@ namespace NBApp.Controllers
             {
                 return RedirectToAction("Index", "Products");
             }
-            //delete image
-            if (!string.IsNullOrEmpty(product.ImageUrl))
-            {
-                var oldRelative = product.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
-                string imageFullPath = Path.Combine(_environment.WebRootPath, oldRelative);
-                if (System.IO.File.Exists(imageFullPath))
-                {
-                    System.IO.File.Delete(imageFullPath);
-                }
-            }
+            string imageFullPath = _environment.WebRootPath+"/Products/"+product.ImageUrl;
+            System.IO.File.Delete(imageFullPath);
+
             _context.Products.Remove(product);
             _context.SaveChanges(true);
+
             return RedirectToAction("Index", "Products");
+
+        }
+            
+            
         }
     }
-}
+

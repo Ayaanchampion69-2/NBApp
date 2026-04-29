@@ -20,8 +20,8 @@ namespace NBApp.Models
 
         public decimal? SalePrice { get; set; }
 
-        [StringLength(500)]
-        public IFormFile? ImageFile { get; set; }
+        //[StringLength(500)]
+        public IFormFile ImageFile { get; set; }
         [Required]
         public DateTime? ReleaseDate { get; set; } = DateTime.Today;
 

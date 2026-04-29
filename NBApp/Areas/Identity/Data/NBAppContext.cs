@@ -27,7 +27,7 @@ public DbSet<NBApp.Models.OrderItem> OrderItem { get; set; } = default!;
     public DbSet<NBApp.Models.ShippingAddress> ShippingAddresses { get; set; } = default!;
 
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    /*protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         //seed categories
@@ -43,5 +43,5 @@ public DbSet<NBApp.Models.OrderItem> OrderItem { get; set; } = default!;
     }
     
    
-
+    */
 }

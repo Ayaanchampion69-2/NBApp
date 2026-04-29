@@ -17,7 +17,6 @@ builder.Services.AddDefaultIdentity<NBAppUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<NBAppContext>();
 
-
 // Add Session State with server memory (distributed memory cache)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
