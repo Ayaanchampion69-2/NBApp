@@ -74,7 +74,7 @@ else
                 </div>
 
                 <div class="flex flex-1 flex-col p-4">
-                    <span class="text-xs font-medium text-indigo-600">@product.Category.Name</span>
+                    <span class="text-xs font-medium text-indigo-600">@(product.Category?.Name ?? "Uncategorized")</span>
                     <h3 class="mt-1 text-lg font-semibold text-gray-900">@product.Name</h3>
                     <p class="mt-1 text-sm text-gray-500 line-clamp-2">@product.Description</p>
 
