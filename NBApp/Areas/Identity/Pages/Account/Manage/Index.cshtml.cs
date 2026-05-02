@@ -17,13 +17,16 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<NBAppUser> _userManager;
         private readonly SignInManager<NBAppUser> _signInManager;
+        private readonly IWebHostEnvironment _env;
 
         public IndexModel(
             UserManager<NBAppUser> userManager,
-            SignInManager<NBAppUser> signInManager)
+            SignInManager<NBAppUser> signInManager,
+            IWebHostEnvironment env)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _env = env;
         }
 
         /// <summary>
@@ -59,6 +62,13 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            [Display(Name ="Display Name")]
+            public string DisplayName { get; set; }
+
+            [Display(Name = "Profile Picture")]
+            public IFormFile ProfilePicture { get; set; }
+
+            public string CurrentProfilePicturePath { get; set; }
         }
 
         private async Task LoadAsync(NBAppUser user)
@@ -70,7 +80,10 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                DisplayName = user.DisplayName,
+                CurrentProfilePicturePath = user.ProfilePicturePath
+
             };
         }
 
@@ -99,6 +112,10 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+            if(Input.DisplayName !=user.DisplayName)
+            {
+                user.DisplayName = Input.DisplayName;
+            }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
@@ -110,9 +127,61 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            // Handle profile picture upload
+            if (Input.ProfilePicture != null && Input.ProfilePicture.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var ext = Path.GetExtension(Input.ProfilePicture.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("Input.ProfilePicture", "Only image files are allowed.");
+                    await LoadAsync(user);
+                    return Page();
+                }
+
+                // Delete old picture if it exists
+                if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+                {
+                    var oldPath = Path.Combine(_env.WebRootPath, user.ProfilePicturePath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldPath))
+                        System.IO.File.Delete(oldPath);
+                }
+
+                // Save new picture to wwwroot/uploads/pfp/
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "pfp");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{user.Id}_{Guid.NewGuid()}{ext}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await Input.ProfilePicture.CopyToAsync(stream);
+
+                user.ProfilePicturePath = $"wwwroot/ProfilePictures";
+                await _userManager.UpdateAsync(user);
+            }
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostDeletePictureAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+            {
+                var fullPath = Path.Combine(_env.WebRootPath, user.ProfilePicturePath.TrimStart('/'));
+                if (System.IO.File.Exists(fullPath))
+                    System.IO.File.Delete(fullPath);
+
+                user.ProfilePicturePath = null;
+                await _userManager.UpdateAsync(user);
+            }
+
+            StatusMessage = "Profile picture removed.";
             return RedirectToPage();
         }
     }

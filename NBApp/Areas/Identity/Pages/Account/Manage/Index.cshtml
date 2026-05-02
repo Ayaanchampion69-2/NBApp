@@ -9,17 +9,41 @@
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <form id="profile-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
                 <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
                 <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Input.DisplayName" class="form-control" placeholder="Display Name" />
+                <label asp-for="Input.DisplayName"></label>
+                <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
+            @if (!string.IsNullOrEmpty(Model.Input.CurrentProfilePicturePath))
+            {
+                <div>
+                    <img src="@Model.Input.CurrentProfilePicturePath" width="100" style="border-radius:50%;" />
+                </div>
+            }
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ProfilePicture" type="file" accept="image/*" class="form-control" />
+                <label asp-for="Input.ProfilePicture"></label>
+                <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Input.CurrentProfilePicturePath))
+            {
+                <form method="post">
+                    <button type="submit" asp-page-handler="DeletePicture" class="btn btn-danger btn-sm">
+                        Remove Picture
+                    </button>
+                </form>
+            }
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </form>
     </div>
