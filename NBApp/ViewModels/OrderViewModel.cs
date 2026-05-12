@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace NBApp.ViewModels
 {
@@ -17,14 +18,18 @@ namespace NBApp.ViewModels
 
     public class UserViewModel
     {
-        public string Id { get; set; }
+        [Required]  
+        public string Id { get; set; } = "";
     }
 
     public class AddressViewModel
     {
-        public string BuildingNumber { get; set; }
-        public string Street { get; set; }
-        public string City { get; set; }
-        public string PostalCode { get; set; }
+        [Required]
+        public string BuildingNumber { get; set; } = "";
+        [Required]
+        public string Street { get; set; } ="";
+        [Required]
+        public string City { get; set; } = "";
+        public string PostalCode { get; set; } = "";
     }
 }

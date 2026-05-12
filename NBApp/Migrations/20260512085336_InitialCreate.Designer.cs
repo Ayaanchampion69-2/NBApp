@@ -12,15 +12,15 @@ using NBApp.Areas.Identity.Data;
 namespace NBApp.Migrations
 {
     [DbContext(typeof(NBAppContext))]
-    [Migration("20260414075227_DBseeded")]
-    partial class DBseeded
+    [Migration("20260512085336_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -182,20 +182,6 @@ namespace NBApp.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            CategoryId = 1,
-                            Description = "Flavoured frozen treats to beat the heat.",
-                            Name = "Ice Blocks"
-                        },
-                        new
-                        {
-                            CategoryId = 2,
-                            Description = "Creamy and delicious frozen desserts.",
-                            Name = "Ice Creams"
-                        });
                 });
 
             modelBuilder.Entity("NBApp.Models.NBAppUser", b =>
@@ -208,6 +194,10 @@ namespace NBApp.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -239,6 +229,9 @@ namespace NBApp.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProfilePicturePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -274,9 +267,8 @@ namespace NBApp.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ShippingAddress")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<int?>("ShippingAddressId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -290,9 +282,13 @@ namespace NBApp.Migrations
 
                     b.HasKey("OrderId");
 
+                    b.HasIndex("ShippingAddressId")
+                        .IsUnique()
+                        .HasFilter("[ShippingAddressId] IS NOT NULL");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("NBApp.Models.OrderItem", b =>
@@ -332,7 +328,7 @@ namespace NBApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -354,6 +350,15 @@ namespace NBApp.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SKUNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("SalePrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
@@ -362,30 +367,34 @@ namespace NBApp.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            CategoryId = 1,
-                            Description = "Refreshing mango-flavored ice block.",
-                            ImageUrl = "https://images.unsplash.com/photo-1625860650806-871900fe2c36?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFuZ28lMjBpY2UlMjBibG9ja3N8ZW58MHx8MHx8fDA%3D",
-                            IsActive = true,
-                            Name = "Mango Ice Block",
-                            Price = 1.99m,
-                            StockQuantity = 100
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            CategoryId = 2,
-                            Description = "Rich and creamy chocolate ice cream.",
-                            ImageUrl = "https://plus.unsplash.com/premium_photo-1741218406315-92a49a8a6e09?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2hvY28lMjBpY2UlMjBjcmVhbXxlbnwwfHwwfHx8MA%3D%3D",
-                            IsActive = true,
-                            Name = "Chocolate Ice Cream",
-                            Price = 3.49m,
-                            StockQuantity = 50
-                        });
+            modelBuilder.Entity("NBApp.Models.ShippingAddress", b =>
+                {
+                    b.Property<int>("ShipID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShipID"));
+
+                    b.Property<string>("BuildingNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ShipID");
+
+                    b.ToTable("ShippingAddresses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -441,11 +450,17 @@ namespace NBApp.Migrations
 
             modelBuilder.Entity("NBApp.Models.Order", b =>
                 {
+                    b.HasOne("NBApp.Models.ShippingAddress", "ShippingAddress")
+                        .WithOne("Order")
+                        .HasForeignKey("NBApp.Models.Order", "ShippingAddressId");
+
                     b.HasOne("NBApp.Models.NBAppUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ShippingAddress");
 
                     b.Navigation("User");
                 });
@@ -473,9 +488,7 @@ namespace NBApp.Migrations
                 {
                     b.HasOne("NBApp.Models.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
                 });
@@ -498,6 +511,12 @@ namespace NBApp.Migrations
             modelBuilder.Entity("NBApp.Models.Products", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("NBApp.Models.ShippingAddress", b =>
+                {
+                    b.Navigation("Order")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

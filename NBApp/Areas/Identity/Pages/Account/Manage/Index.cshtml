@@ -9,19 +9,49 @@
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <!-- Profile picture preview -->
+        @if (!string.IsNullOrEmpty(Model.Input.CurrentProfilePicturePath))
+        {
+            <div class="mb-3">
+                <img src="@Model.Input.CurrentProfilePicturePath" alt="DefaultPfp.png"
+                     width="100"
+                     style="border-radius: 50%; object-fit: cover; height: 100px;" />
+            </div>
+        }
+        <form id="profile-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <!-- Display Name -->
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Input.DisplayName" class="form-control" placeholder="Display Name" />
+                <label asp-for="Input.DisplayName"></label>
+                <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <!-- Profile Picture Upload -->
+            <div class="mb-3">
+                <label asp-for="Input.ProfilePicture" class="form-label"></label>
+                <input asp-for="Input.ProfilePicture" type="file" accept="image/*" class="form-control" />
+                <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+            </div>
+
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">
+                Save
+            </button>
+           
         </form>
+        <!-- Remove picture button — separate form so it doesn't interfere -->
+        @if (!string.IsNullOrEmpty(Model.Input.CurrentProfilePicturePath))
+        {
+            <form method="post" class="mt-2">
+                <button type="submit" asp-page-handler="DeletePicture" class="w-100 btn btn-outline-danger">
+                    Remove Profile Picture
+                </button>
+            </form>
+        }
     </div>
 </div>
 

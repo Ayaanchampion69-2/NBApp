@@ -179,20 +179,6 @@ namespace NBApp.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            CategoryId = 1,
-                            Description = "Flavoured frozen treats to beat the heat.",
-                            Name = "Ice Blocks"
-                        },
-                        new
-                        {
-                            CategoryId = 2,
-                            Description = "Creamy and delicious frozen desserts.",
-                            Name = "Ice Creams"
-                        });
                 });
 
             modelBuilder.Entity("NBApp.Models.NBAppUser", b =>
@@ -205,6 +191,10 @@ namespace NBApp.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -236,6 +226,9 @@ namespace NBApp.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProfilePicturePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -371,30 +364,6 @@ namespace NBApp.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            CategoryId = 1,
-                            Description = "Refreshing mango-flavored ice block.",
-                            ImageUrl = "https://images.unsplash.com/photo-1625860650806-871900fe2c36?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFuZ28lMjBpY2UlMjBibG9ja3N8ZW58MHx8MHx8fDA%3D",
-                            IsActive = true,
-                            Name = "Mango Ice Block",
-                            Price = 1.99m,
-                            StockQuantity = 100
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            CategoryId = 2,
-                            Description = "Rich and creamy chocolate ice cream.",
-                            ImageUrl = "https://plus.unsplash.com/premium_photo-1741218406315-92a49a8a6e09?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2hvY28lMjBpY2UlMjBjcmVhbXxlbnwwfHwwfHx8MA%3D%3D",
-                            IsActive = true,
-                            Name = "Chocolate Ice Cream",
-                            Price = 3.49m,
-                            StockQuantity = 50
-                        });
                 });
 
             modelBuilder.Entity("NBApp.Models.ShippingAddress", b =>

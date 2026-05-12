@@ -7,16 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Identity\Data\DbInitializer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="wwwroot\Products\ChocIceCream.jpg" />
     <Content Remove="wwwroot\Products\MangoIceBlock.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Areas\Identity\Data\DbInitializer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,8 +29,8 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\SQL\" />
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\ProfilePictures\" />
-    <Folder Include="wwwroot\Products\" />
   </ItemGroup>
 
 </Project>
