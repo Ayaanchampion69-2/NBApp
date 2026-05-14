@@ -16,7 +16,8 @@ namespace NBApp.Models
          Cancelled
         }
         public int OrderId { get; set; }
-        
+
+        [DataType(DataType.Date)]
         public DateTime OrderDate { get; set; } = DateTime.Today;
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
