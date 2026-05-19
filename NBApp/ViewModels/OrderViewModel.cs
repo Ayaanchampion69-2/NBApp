@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using NBApp.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NBApp.ViewModels
 {
@@ -16,7 +19,6 @@ namespace NBApp.ViewModels
         // ShippingAddress property required by the Details view
         public AddressViewModel ShippingAddress { get; set; } = new AddressViewModel();
     }
-
     public class UserViewModel
     {
         [Required]  
