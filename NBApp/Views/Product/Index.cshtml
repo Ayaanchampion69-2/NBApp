@@ -104,11 +104,21 @@ else
                     </div>
 
                     <div class="mt-4 flex gap-2">
-                        <a asp-action="Details" asp-route-id="@product.ProductId" class="flex-1 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">
+                        <button type="button">
+                            <a asp-action="Details" asp-route-id="@product.ProductId" class="flex-1 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">
                             Details
                         </a>
-                        <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId">Edit</a>
-                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" onclick ="return confirm('Are you sure you want to delete this product?')">Delete</a>
+                        </button>
+                        <button type="button" >
+                        <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId">
+                            Edit
+                        </a>
+                        </button>
+                        <button type="button" >
+                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" onclick ="return confirm('Are you sure you want to delete this product?')">
+                            Delete
+                         </a>
+                        </button>
                         @if (product.StockQuantity > 0)
                         {
                             <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-1">
