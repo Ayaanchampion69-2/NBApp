@@ -10,8 +10,8 @@ SELECT
               / (SELECT COUNT(DISTINCT OrderId) FROM Orders
                  WHERE Status NOT IN (4))
     , 2)                   AS PctOfAllOrders
-FROM  OrderItems oi1
-JOIN  OrderItems oi2 ON  oi2.OrderId   = oi1.OrderId
+FROM  OrderItem oi1
+JOIN  OrderItem oi2 ON  oi2.OrderId   = oi1.OrderId
                     AND oi2.ProductId > oi1.ProductId -- avoid dupes & self-pairs
 JOIN  Products p1   ON  p1.ProductId  = oi1.ProductId
 JOIN  Products p2   ON  p2.ProductId  = oi2.ProductId

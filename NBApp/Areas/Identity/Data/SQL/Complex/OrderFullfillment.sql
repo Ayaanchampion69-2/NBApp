@@ -24,7 +24,7 @@ SELECT
 FROM StuckOrders so
 JOIN  AspNetUsers    u  ON u.Id              = so.UserId
 LEFT JOIN ShippingAddresses sa ON sa.ShipID     = so.ShippingAddressId
-LEFT JOIN OrderItems        oi ON oi.OrderId   = so.OrderId
+LEFT JOIN OrderItem        oi ON oi.OrderId   = so.OrderId
 GROUP BY
     so.OrderId, so.OrderDate, so.DaysWaiting, so.TotalAmount, so.Status,
     u.Email, u.DisplayName,

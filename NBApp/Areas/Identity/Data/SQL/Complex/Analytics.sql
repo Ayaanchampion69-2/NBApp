@@ -15,7 +15,7 @@ SELECT
                                                          AS RunningTotal
 FROM Categories c
 JOIN Products  p  ON p.CategoryId = c.CategoryId
-JOIN OrderItems oi ON oi.ProductId = p.ProductId
+JOIN OrderItem oi ON oi.ProductId = p.ProductId
 JOIN Orders    o  ON o.OrderId   = oi.OrderId
                   AND o.Status NOT IN (4)
 GROUP BY c.CategoryId, c.Name

@@ -11,7 +11,7 @@ SELECT
     COALESCE(SUM(oi.Quantity * oi.UnitPrice), 0)   AS TotalRevenue
 FROM Products p
 LEFT JOIN Categories c  ON c.CategoryId = p.CategoryId
-LEFT JOIN OrderItems oi ON oi.ProductId = p.ProductId
+LEFT JOIN OrderItem oi ON oi.ProductId = p.ProductId
 LEFT JOIN Orders o      ON o.OrderId = oi.OrderId
                         AND o.Status NOT IN (4) -- exclude Cancelled
 WHERE p.IsActive = 1
