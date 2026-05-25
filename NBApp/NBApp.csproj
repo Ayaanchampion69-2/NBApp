@@ -31,6 +31,7 @@
     <Folder Include="Areas\Identity\Data\SQL\Advanced\" />
     <Folder Include="Areas\Identity\Data\SQL\Simple\" />
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\SVG\" />
     <Folder Include="wwwroot\ProfilePictures\" />
   </ItemGroup>
 

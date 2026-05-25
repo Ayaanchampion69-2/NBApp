@@ -1,0 +1,1 @@
+﻿DROP INDEX IX_Orders_ShippingAddressId ON dbo.Orders;
