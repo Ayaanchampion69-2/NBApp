@@ -46,7 +46,10 @@ namespace NBApp.Controllers
             var order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.ShippingAddress)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
+
             if (order == null)
             {
                 return NotFound();
@@ -57,14 +60,26 @@ namespace NBApp.Controllers
                 OrderId = order.OrderId,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
-                User = new UserViewModel { Id = order.User?.Id },
-                ShippingAddress = new AddressViewModel
+
+                // Flat user fields
+                UserId = order.User?.Id ?? "",
+                UserDisplayName = order.User?.UserName ?? "",
+
+                // Flat address fields
+                BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
+                Street = order.ShippingAddress?.Street ?? "",
+                City = order.ShippingAddress?.City ?? "",
+                PostalCode = order.ShippingAddress?.PostalCode ?? "",
+
+                // Order items
+                OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
                 {
-                    BuildingNumber = order.ShippingAddress?.BuildingNumber,
-                    Street = order.ShippingAddress?.Street,
-                    City = order.ShippingAddress?.City,
-                    PostalCode = order.ShippingAddress?.PostalCode
-                }
+                    OrderItemId = oi.OrderItemId,
+                    ProductId = oi.ProductId,
+                    ProductName = oi.Product?.Name ?? "",
+                    Quantity = oi.Quantity,
+                    UnitPrice = oi.UnitPrice
+                }).ToList() ?? new()
             };
 
             return View(viewModel);

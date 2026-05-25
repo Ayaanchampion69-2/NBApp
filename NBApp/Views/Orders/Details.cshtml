@@ -1,50 +1,67 @@
 ﻿@model NBApp.ViewModels.OrderViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Order Details";
 }
 
-<h1>Details</h1>
+<h1>Order Details</h1>
 
 <div>
-    <h4>Order</h4>
+    <h4>Order #@Model.OrderId</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.DisplayName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ShippingAddress)
-        </dt>
+
+        <dt class="col-sm-2">Customer</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.UserDisplayName)</dd>
+
+        <dt class="col-sm-2">Order Date</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.OrderDate)</dd>
+
+        <dt class="col-sm-2">Shipping Address</dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ShippingAddress.BuildingNumber)
+            @Model.BuildingNumber @Model.Street<br />
+            @Model.City @Model.PostalCode
         </dd>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ShippingAddress.Street)
-        </dd>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ShippingAddress.City)
-        </dd>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ShippingAddress.PostalCode)
-        </dd>
+
+        <dt class="col-sm-2">Total Amount</dt>
+        <dd class="col-sm-10">@Model.TotalAmount.ToString("C")</dd>
+
     </dl>
 </div>
+
+<div>
+    <h4>Order Items</h4>
+    <hr />
+    @if (Model.OrderItems != null && Model.OrderItems.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.UnitPrice.ToString("C")</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.TotalPrice.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No items found for this order.</p>
+    }
+</div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.OrderId">Edit</a> |
     <a asp-action="Index">Back to List</a>
