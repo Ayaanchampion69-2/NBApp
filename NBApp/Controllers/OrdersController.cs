@@ -63,7 +63,7 @@ namespace NBApp.Controllers
 
                 // Flat user fields
                 UserId = order.User?.Id ?? "",
-                UserDisplayName = order.User?.UserName ?? "",
+                DisplayName = order.User?.DisplayName ?? "",
 
                 // Flat address fields
                 BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",

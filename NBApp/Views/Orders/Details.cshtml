@@ -1,68 +1,98 @@
 ﻿@model NBApp.ViewModels.OrderViewModel
-
 @{
     ViewData["Title"] = "Order Details";
 }
 
-<h1>Order Details</h1>
+<div class="bg-gray-50 p-6 rounded-xl">
 
-<div>
-    <h4>Order #@Model.OrderId</h4>
-    <hr />
-    <dl class="row">
+    <a asp-action="Index" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-5">
+        ← Back to orders
+    </a>
 
-        <dt class="col-sm-2">Customer</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.UserDisplayName)</dd>
+    <div class="flex items-start justify-between mb-6">
+        <div>
+            <h1 class="text-xl font-medium text-gray-900">Order Details</h1>
+            <p class="text-sm text-gray-400 mt-0.5">Order #@Model.OrderId &nbsp;·&nbsp; @Model.OrderDate.ToString("dd/MM/yyyy")</p>
+        </div>
+        <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-medium px-3 py-1.5 rounded-full">
+            ✓ Confirmed
+        </span>
+    </div>
 
-        <dt class="col-sm-2">Order Date</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.OrderDate)</dd>
+    
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Customer</p>
+            <p class="text-sm text-gray-900">@Html.DisplayFor(m => m.DisplayName)</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Order date</p>
+            <p class="text-sm text-gray-900">@Html.DisplayFor(m => m.OrderDate)</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Shipping address</p>
+            <p class="text-sm text-gray-500 leading-relaxed">
+                @Model.BuildingNumber @Model.Street<br />
+                @Model.City @Model.PostalCode
+            </p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Total amount</p>
+            <p class="text-xl font-medium text-gray-900">@Model.TotalAmount.ToString("C")</p>
+        </div>
+    </div>
 
-        <dt class="col-sm-2">Shipping Address</dt>
-        <dd class="col-sm-10">
-            @Model.BuildingNumber @Model.Street<br />
-            @Model.City @Model.PostalCode
-        </dd>
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden mb-4">
+        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-sm font-medium text-gray-900">Order items</h2>
+            <span class="text-xs text-gray-400">@Model.OrderItems?.Count() items</span>
+        </div>
 
-        <dt class="col-sm-2">Total Amount</dt>
-        <dd class="col-sm-10">@Model.TotalAmount.ToString("C")</dd>
-
-    </dl>
-</div>
-
-<div>
-    <h4>Order Items</h4>
-    <hr />
-    @if (Model.OrderItems != null && Model.OrderItems.Any())
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                    <th>Line Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.OrderItems)
-                {
+        @if (Model.OrderItems != null && Model.OrderItems.Any())
+        {
+            <table class="w-full text-sm border-collapse">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td>@item.ProductName</td>
-                        <td>@item.UnitPrice.ToString("C")</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.TotalPrice.ToString("C")</td>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Product</th>
+                        <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Unit price</th>
+                        <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Qty</th>
+                        <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Line total</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p class="text-muted">No items found for this order.</p>
-    }
-</div>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <tr class="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-3 text-gray-900">@item.ProductName</td>
+                            <td class="px-4 py-3 text-right text-gray-500">@item.UnitPrice.ToString("C")</td>
+                            <td class="px-4 py-3 text-right text-gray-500">@item.Quantity</td>
+                            <td class="px-4 py-3 text-right font-medium text-gray-900">@item.TotalPrice.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="border-t-2 border-gray-200 bg-gray-50">
+                        <td colspan="3" class="px-4 py-3 font-medium text-gray-900">Total</td>
+                        <td class="px-4 py-3 text-right font-medium text-gray-900">@Model.TotalAmount.ToString("C")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+        else
+        {
+            <p class="px-4 py-6 text-sm text-gray-400 text-center">No items found for this order.</p>
+        }
+    </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrderId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="flex items-center gap-2">
+        <a asp-action="Edit" asp-route-id="@Model?.OrderId"
+           class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:opacity-85 transition-opacity">
+            Edit order
+        </a>
+        <a asp-action="Index"
+           class="inline-flex items-center gap-1.5 px-4 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+            Back to list
+        </a>
+    </div>
+
 </div>

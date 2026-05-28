@@ -1,5 +1,5 @@
 ﻿@{
-    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout != null)
     {
         Layout = parentLayout.ToString();
     }
@@ -9,17 +9,31 @@
     }
 }
 
-<h1>Manage your account</h1>
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-5xl mx-auto">
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+            <p class="text-sm text-gray-500 mt-1">Manage your account</p>
         </div>
-        <div class="col-md-9">
-            @RenderBody()
+
+        <div class="flex gap-6">
+
+            <!-- Sidebar -->
+            <aside class="w-56 shrink-0">
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="px-4 py-3 border-b border-gray-100">
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Account</p>
+                    </div>
+                    <partial name="_ManageNav" />
+                </div>
+            </aside>
+
+            <!-- Main content -->
+            <main class="flex-1 bg-white border border-gray-200 rounded-xl p-6">
+                @RenderBody()
+            </main>
+
         </div>
     </div>
 </div>

@@ -20,7 +20,7 @@ namespace NBApp.ViewModels
         [Required]
         public string UserId { get; set; } = "";
 
-        public string UserDisplayName { get; set; } = "";
+        public string DisplayName { get; set; } = "";
 
         // Shipping Address
         [Required]

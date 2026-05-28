@@ -15,29 +15,35 @@ namespace NBApp.Models
         public string? Description { get; set; } = string.Empty;
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "decimal(10,2)")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-        public decimal? Price { get; set; } 
+        public decimal? Price { get; set; }
 
+        [Display(Name = "Sale Price")]
         public decimal? SalePrice { get; set; }
 
         //[StringLength(500)]
-        public IFormFile ImageFile { get; set; }
+        [Display(Name = "Product Image File")]
+        public IFormFile? ImageFile { get; set; }
         [Required]
         [DataType(DataType.Date)]
-        [NoReleaseDateInPast(ErrorMessage = "Release Date cannot be before today.")]
+        [NoReleaseDateInPast(ErrorMessage = "Release Date cannot be before today or after 3 months.")]
+        [Display(Name = "Release Date")]
         public DateTime? ReleaseDate { get; set; } = DateTime.Today;
 
 
         [Required]
         [Range(0, int.MaxValue)]
+        [Display(Name = "Stock Quantity")]
         public int? StockQuantity { get; set; }
         [Required]
         public bool IsActive { get; set; } = true;
         [Required]
+        [Display(Name = "SKU Number")]
         public string? SKUNumber { get; set; }
 
         // Foreign key
+        [Display(Name ="Category")]
         public int? CategoryId { get; set; }
         // Navigation property
 
