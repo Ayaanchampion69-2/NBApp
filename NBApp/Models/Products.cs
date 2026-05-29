@@ -20,9 +20,10 @@ namespace NBApp.Models
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+        [Range(0.01,500, ErrorMessage = "Price must be greater than 0")]
         public decimal? Price { get; set; }
 
+        [Range(0.01, 500, ErrorMessage = "Price must be greater than 0")]
         public decimal? SalePrice { get; set; }
 
         [StringLength(500)]

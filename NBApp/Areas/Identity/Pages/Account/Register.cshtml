@@ -5,109 +5,100 @@
 }
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h1 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">@ViewData["Title"]</h1>
-    </div>
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white px-8 pt-10 pb-6 shadow-md rounded-lg border border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Register</h1>
 
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="space-y-6">
-            <h2 class="text-lg font-semibold text-gray-700">Create a new account</h2>
-            <div asp-validation-summary="ModelOnly" class="rounded-md bg-red-50 p-4 text-sm text-red-700" role="alert"></div>
-            <div>
-                <label asp-for="Input.DisplayName" class="block text-sm/6 font-medium text-gray-900">User Name</label>
-                <div class="mt-2">
-                    <input asp-for="Input.DisplayName" autocomplete="username" aria-required="true" placeholder="John Pork"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                </div>
-                <span asp-validation-for="Input.DisplayName" class="mt-1 text-sm text-red-600"></span>
-            </div>
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post"
+                  enctype="multipart/form-data" class="space-y-4">
 
-            <div>
-                <label asp-for="Input.Email" class="block text-sm/6 font-medium text-gray-900">Email</label>
-                <div class="mt-2">
-                    <input asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="name@example.com"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                </div>
-                <span asp-validation-for="Input.Email" class="mt-1 text-sm text-red-600"></span>
-            </div>
+                <div asp-validation-summary="ModelOnly"
+                     class="rounded-md bg-red-50 p-4 text-sm text-red-700" role="alert"></div>
 
-            <div>
-                <label asp-for="Input.Password" class="block text-sm/6 font-medium text-gray-900">Password</label>
-                <div class="mt-2">
-                    <input asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="password"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                <div>
+                    <input asp-for="Input.DisplayName" autocomplete="username" aria-required="true"
+                           placeholder="Username"
+                           class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900
+                    border border-gray-300
+                    placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2
+                    focus:outline-indigo-600 sm:text-sm" />
+                    <span asp-validation-for="Input.DisplayName" class="mt-1 text-sm text-red-600"></span>
                 </div>
-                <span asp-validation-for="Input.Password" class="mt-1 text-sm text-red-600"></span>
-            </div>
 
-            <div>
-                <label asp-for="Input.ConfirmPassword" class="block text-sm/6 font-medium text-gray-900">Confirm Password</label>
-                <div class="mt-2">
-                    <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="password"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                <div>
+                    <input asp-for="Input.Email" autocomplete="email" aria-required="true"
+                           placeholder="Email"
+                           class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900
+                    border border-gray-300
+                    placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2
+                    focus:outline-indigo-600 sm:text-sm" />
+                    <span asp-validation-for="Input.Email" class="mt-1 text-sm text-red-600"></span>
                 </div>
-                <span asp-validation-for="Input.ConfirmPassword" class="mt-1 text-sm text-red-600"></span>
-            </div>
-            <div>
-                <label asp-for="Input.ProfilePicture" class="block text-sm/6 font-medium text-gray-900">Profile Picture</label>
-                <div class="mt-2">
-                    <input asp-for="Input.ProfilePicture" type="file" aria-required="true"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                </div>
-                <span asp-validation-for="Input.ProfilePicture" class="mt-1 text-sm text-red-600"></span>
-            </div>
 
-            <div>
-                <button id="registerSubmit" type="submit"
-                        class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Register
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-10">
-            <div class="relative">
-                <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-gray-200"></div>
+                <div>
+                    <input asp-for="Input.Password" autocomplete="new-password" aria-required="true"
+                           placeholder="Password"
+                           class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900
+                    border border-gray-300
+                    placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2
+                    focus:outline-indigo-600 sm:text-sm" />
+                    <span asp-validation-for="Input.Password" class="mt-1 text-sm text-red-600"></span>
                 </div>
-                <div class="relative flex justify-center text-sm/6 font-medium">
-                    <span class="bg-gray-100 px-6 text-gray-900">Or continue with</span>
-                </div>
-            </div>
 
-            <div class="mt-6">
-                @{
-                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                    {
-                        <p class="text-center text-sm text-gray-500">
-                            No external authentication services configured. See this 
-                            <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="font-semibold text-indigo-600 hover:text-indigo-500">article</a>
-                            about setting up external login services.
-                        </p>
-                    }
-                    else
-                    {
-                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="space-y-3">
-                            @foreach (var provider in Model.ExternalLogins!)
-                            {
-                                <button type="submit" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account"
-                                        class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:ring-transparent">
-                                    @provider.DisplayName
-                                </button>
-                            }
-                        </form>
-                    }
-                }
-            </div>
+                <div>
+                    <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true"
+                           placeholder="Confirm Password"
+                           class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900
+                    border border-gray-300
+                    placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2
+                    focus:outline-indigo-600 sm:text-sm" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="mt-1 text-sm text-red-600"></span>
+                </div>
+
+                <!-- Profile picture — optional -->
+                <div>
+                    <label for="Input_ProfilePicture"
+                           class="inline-flex items-center gap-2 cursor-pointer rounded-md border
+                        border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700
+                        shadow-sm hover:bg-gray-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500"
+                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0
+                            012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0
+                            00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Choose profile picture
+                        <span class="text-xs text-gray-400">(optional)</span>
+                        <span id="pfp-label" class="text-xs text-gray-400 ml-1">No file chosen</span>
+                        <input asp-for="Input.ProfilePicture" type="file" accept="image/*"
+                               class="sr-only"
+                               onchange="document.getElementById('pfp-label').textContent =
+                        this.files[0]?.name ?? 'No file chosen'" />
+                    </label>
+                    <span asp-validation-for="Input.ProfilePicture" class="mt-1 text-sm text-red-600"></span>
+                </div>
+
+                
+                <div class="flex items-center justify-between pt-2 pb-4">
+                    <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl"
+                       class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium
+                        text-gray-700 hover:bg-gray-50">
+                        Existing User?
+                    </a>
+                    <button id="registerSubmit" type="submit"
+                            class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold
+                        text-white shadow-sm hover:bg-indigo-500
+                        focus-visible:outline-2 focus-visible:outline-offset-2
+                        focus-visible:outline-indigo-600">
+                        Register
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <p class="mt-10 text-center text-sm/6 text-gray-500">
-            Already have an account?
-            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="font-semibold text-indigo-600 hover:text-indigo-500">Sign in</a>
-        </p>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-}
+} 
