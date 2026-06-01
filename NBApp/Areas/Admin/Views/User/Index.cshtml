@@ -1,0 +1,128 @@
+﻿@using NBApp.ViewModels
+@model UserViewModel
+@{
+    ViewData["Title"] = "| Manage User";
+}
+<h2>Manage User</h2>
+<h4><a asp-action="Register" asp-area="Identity" asp-controller="Account">Add a User</a></h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+              UserName  
+            </th>
+            <th>
+             Roles   
+            </th>
+            <th>
+
+            </th>
+            <th>
+
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Users.Count() == 0)
+        {
+            <tr>
+                <td colspan="5" class="text-center">No users found.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (NBAppUser user in Model.Users)
+            {
+               <tr>
+                   <td>
+                        @user.UserName
+                   </td>
+                   <td>
+                        @foreach (string role in user.Roles)
+                        {
+                          <div>@role</div>  
+                        }
+                    </td>
+                    <td>
+                        <form method="post" asp-action="Delete" asp-route-id ="@user.Id">
+                            <button type="submit">
+                                Delete User
+                            </button>
+
+                        </form>
+                    </td>
+                    <td>
+                        @foreach (var role in Model.Roles)
+                        {
+                            if (!user.Roles.Contains(role.Name))
+                            {
+                                <form method="post" asp-action="AddToRole"asp-route-userid="@user.Id" asp-route-roleName="@role.Name">
+                            
+                                    <button type="submit">
+                                        Add to @role.Name
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-action="RemoveFromRole" asp-route-userid="@user.Id" asp-route-roleName="@role.Name">
+                                    <button type="submit">
+                                        Remove from @role.Name
+                                    </button>
+                                </form>
+                            }
+                        }
+                        )
+                    </td>
+               </tr> 
+            }
+        }
+    </tbody>
+    </table>
+
+    <h2>Manage Roles</h2>
+    <form method="post" asp-action="CreateRole">
+        <div>
+            <label for="rolename">Role Name</label>
+            <div>
+                <input type="text" id=" rolename" name="rolename" placeholder="Role Name" />
+                <button type="submit">Create Role</button>
+            </div>
+        </div>
+    </form>
+
+@if (!Model.Roles.Any(role => role.Name?.ToLower() == "admin"))
+{
+    <form method="post" asp-action="CreateAdminRole">
+        <button type="submit">Create Admin Role</button>
+    </form>
+}
+else
+{
+  <table>
+    <thead>
+        <tr>
+            <th>Role</th>
+            <td></td>
+        </tr>
+       
+    </thead>
+    <tbody>
+            @foreach (var role in Model.Roles)
+            {
+                <tr>
+                    <td>@role.Name</td>
+                    <td>
+                        <form method="post" asp-action="DeleteRole" asp-route-id="@role.Id">
+                            <button type="submit" class="btn btn-danger">Delete Role</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+    </tbody>
+  </table>  
+}

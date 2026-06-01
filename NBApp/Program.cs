@@ -15,6 +15,7 @@ builder.Services.AddDbContext<NBAppContext>(options =>
 //DI for DbContext
 builder.Services.AddDefaultIdentity<NBAppUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NBAppContext>();
     
 
@@ -30,29 +31,6 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddControllersWithViews();
 
-/*{
-    var app = CreateHostBuilder(args).Build();
-
-    CreateDbIfNotExists(app);
-
-    app.Run();
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<NBAppContext>();
-        DbInitializer.Initialize(context);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred creating the DB.");
-    }
-}
-;*/
 
 // This automatically scans your project and registers all validators it finds
 builder.Services
@@ -74,6 +52,17 @@ app.UseSession(); // Enable Session State middleware
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    await IdentityConfig.CreateAdminUserAsync(scope.ServiceProvider);
+}
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+    );
 
 app.MapDefaultControllerRoute();
 app.MapRazorPages(); // Required for Identity UI
