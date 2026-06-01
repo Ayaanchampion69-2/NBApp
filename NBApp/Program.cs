@@ -48,6 +48,7 @@ using (var scope = app.Services.CreateScope())
 
 
 app.UseStaticFiles();
+app.UseRouting();
 app.UseSession(); // Enable Session State middleware
 
 app.UseAuthentication();
