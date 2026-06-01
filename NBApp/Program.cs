@@ -1,25 +1,20 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.FlowAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddDbContext<NBAppContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NBAppContextConnection")));
 
-//DI for DbContext
 builder.Services.AddDefaultIdentity<NBAppUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NBAppContext>();
-    
 
-// Add Session State with server memory (distributed memory cache)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -28,47 +23,34 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-
 builder.Services.AddControllersWithViews();
 
-
-// This automatically scans your project and registers all validators it finds
-builder.Services
-    .AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
-// Seed the database
+
+// Seed the database + create admin user in one scope
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<NBAppContext>();
-    context.Database.Migrate(); // Apply any pending migrations
+    context.Database.Migrate();
     DbInitializer.Initialize(context);
+    IdentityConfig.CreateAdminUserAsync(services).GetAwaiter().GetResult(); // moved here
 }
-
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession(); // Enable Session State middleware
-
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-
-var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-using (var scope = scopeFactory.CreateScope())
-{
-    await IdentityConfig.CreateAdminUserAsync(scope.ServiceProvider);
-}
 
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-    );
+);
 
 app.MapDefaultControllerRoute();
-app.MapRazorPages(); // Required for Identity UI
-
-
-
+app.MapRazorPages();
 
 app.Run();
