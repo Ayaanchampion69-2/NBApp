@@ -26,13 +26,26 @@ namespace NBApp.Controllers
         // GET: Order
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userOrders = _context.Orders
-                .Where(o => o.UserId == userId)
-                .Include(o => o.User)
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product);
-            return View(await userOrders.ToListAsync());
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees all orders
+                var allOrders = _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product);
+                return View(await allOrders.ToListAsync());
+            }
+            else
+            {
+                // Regular user sees only their own orders
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userOrders = _context.Orders
+                    .Where(o => o.UserId == userId)
+                    .Include(o => o.User)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product);
+                return View(await userOrders.ToListAsync());
+            }
         }
 
         // GET: Order/Details/5

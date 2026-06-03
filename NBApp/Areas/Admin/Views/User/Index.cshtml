@@ -56,6 +56,7 @@
                 <thead class="sticky top-0 z-10 bg-gray-50">
                     <tr>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Username</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Display Name</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Roles</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Manage role</th>
                         <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Delete user</th>
@@ -72,13 +73,16 @@
                     {
                         @foreach (NBAppUser user in Model.Users)
                         {
-                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors even:bg-slate-50"
                                 data-username="@user.UserName?.ToLower()"
                                 data-roles="@string.Join(",", user.Roles).ToLower()">
 
                                 
                                 <td class="px-3 py-2 text-xs truncate max-w-0" title="@user.UserName">
                                     @user.UserName
+                                </td>
+                                <td class="px-3 py-2 text-xs truncate max-w-0" title="@user.DisplayName">
+                                    @user.DisplayName
                                 </td>
 
                                
@@ -142,7 +146,11 @@
                                         <button type="submit"
                                                 onclick="return confirm('Delete @user.UserName?')"
                                                 class="flex items-center gap-1 px-2 py-1 text-xs border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
-                                            Delete user
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+
+
                                         </button>
                                     </form>
                                 </td>
