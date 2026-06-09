@@ -25,28 +25,45 @@ namespace NBApp.Controllers
         }
 
         // GET: Order
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            
+            IQueryable<Order> query;
 
             if (User.IsInRole("Admin"))
             {
-                var allOrders = _context.Orders
+                query = _context.Orders
                     .Include(o => o.User)
                     .Include(o => o.OrderItems)
                         .ThenInclude(oi => oi.Product);
-                return View(await allOrders.ToListAsync());
             }
             else
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var userOrders = _context.Orders
+                query = _context.Orders
                     .Where(o => o.UserId == userId)
                     .Include(o => o.User)
                     .Include(o => o.OrderItems)
                         .ThenInclude(oi => oi.Product);
-                return View(await userOrders.ToListAsync());
             }
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            var orders = await query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var viewModel = new PagedOrdersViewModel
+            {
+                Orders = orders,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+
+            return View(viewModel);
         }
 
         // GET: Order/Details/5

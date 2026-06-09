@@ -1,5 +1,4 @@
-﻿@model IEnumerable<NBApp.Models.Products>
-
+﻿@model NBApp.ViewModels.PagedProductsViewModel
 @{
     ViewData["Title"] = "Products";
     var categories = ViewBag.Categories as List<NBApp.Models.Category>;
@@ -8,14 +7,16 @@
 }
 <div>
     <button type="button" class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
-    <a asp-controller="Product" asp-action="Create">Create</a>
+        <a asp-controller="Product" asp-action="Create">Create</a>
     </button>
 </div>
 <div class="mb-8 flex flex-col sm:flex-row gap-4">
     <form asp-action="Index" method="get" class="flex-1 flex gap-2">
+        <input type="hidden" name="categoryId" value="@currentCategory" />
+        <input type="hidden" name="page" value="1" />
         <div class="relative flex-1">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg height ="10" width="10" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg height="10" width="10" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                 </svg>
             </div>
@@ -28,6 +29,8 @@
     </form>
 
     <form asp-action="Index" method="get" class="sm:w-64">
+        <input type="hidden" name="searchString" value="@searchString" />
+        <input type="hidden" name="page" value="1" />
         <select name="categoryId" onchange="this.form.submit()"
                 class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
             <option value="">All Categories</option>
@@ -42,10 +45,9 @@
             }
         </select>
     </form>
+</div>
 
- </div>
-
-@if (!Model.Any())
+@if (!Model.Products.Any())
 {
     <div class="rounded-md bg-blue-50 p-6 text-center">
         <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -57,13 +59,13 @@
 else
 {
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        @foreach (var product in Model)
+        @foreach (var product in Model.Products)
         {
             <div class="group relative bg-white rounded-lg shadow overflow-hidden flex flex-col">
                 <div class="aspect-square w-full overflow-hidden bg-gray-200">
                     @if (!string.IsNullOrEmpty(product.ImageUrl))
                     {
-                        <img src="@product.ImageUrl" alt="@product.Name" class="h-full w-full object-cover object-center group-hover:opacity-75" height="150" width="151"/>
+                        <img src="@product.ImageUrl" alt="@product.Name" class="h-full w-full object-cover object-center group-hover:opacity-75" height="150" width="151" />
                     }
                     else
                     {
@@ -86,7 +88,7 @@ else
                         <div class="mt-2">
                             @if (product.StockQuantity > 0)
                             {
-                                <span  class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                     <svg height="10" width="10" class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
                                         <circle cx="4" cy="4" r="3" />
                                     </svg>
@@ -108,18 +110,18 @@ else
                     <div class="mt-4 flex gap-2">
                         <button class="border-1" type="button">
                             <a asp-action="Details" asp-route-id="@product.ProductId" class="flex-1 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 text-center">
-                            Details
-                        </a>
+                                Details
+                            </a>
                         </button>
                         <button type="button" class="border-1">
                             <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-50">
-                            Edit
-                        </a>
+                                Edit
+                            </a>
                         </button>
                         <button type="button" class="border-1 text-red-400">
-                            <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" onclick="return confirm('Are you sure you want to delete this product?')" class=" inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-50">
-                         Delete         
-                        </a>
+                            <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" onclick="return confirm('Are you sure you want to delete this product?')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-50">
+                                Delete
+                            </a>
                         </button>
                         @if (product.StockQuantity > 0)
                         {
@@ -129,7 +131,6 @@ else
                                     <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                     </svg>
-                                    
                                 </button>
                             </form>
                         }
@@ -138,4 +139,41 @@ else
             </div>
         }
     </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="flex items-center justify-between px-2 py-4 mt-4">
+            <p class="text-xs text-gray-500">
+                Showing @((Model.CurrentPage - 1) * Model.PageSize + 1)–@(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount)) of @Model.TotalCount products
+            </p>
+            <div class="flex items-center gap-1">
+                <a asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)"
+                   asp-route-categoryId="@currentCategory"
+                   asp-route-searchString="@searchString"
+                   class="px-2.5 py-1 rounded-md text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors @(!Model.HasPreviousPage ? "opacity-40 pointer-events-none" : "")">
+                    ← Prev
+                </a>
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-categoryId="@currentCategory"
+                       asp-route-searchString="@searchString"
+                       class="px-2.5 py-1 rounded-md text-xs font-medium border transition-colors @(i == Model.CurrentPage ? "bg-indigo-600 text-white border-indigo-600" : "border-gray-200 text-gray-600 hover:bg-gray-50")">
+                        @i
+                    </a>
+                }
+
+                <a asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)"
+                   asp-route-categoryId="@currentCategory"
+                   asp-route-searchString="@searchString"
+                   class="px-2.5 py-1 rounded-md text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors @(!Model.HasNextPage ? "opacity-40 pointer-events-none" : "")">
+                    Next →
+                </a>
+            </div>
+        </div>
+    }
 }

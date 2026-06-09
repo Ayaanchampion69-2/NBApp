@@ -1,89 +1,100 @@
 ﻿@page
 @model LoginModel
-
 @{
     ViewData["Title"] = "Log in";
 }
 
-<div class="flex items-center justify-center min-h-[70vh]">
-    <div class="bg-white rounded-xl shadow-md w-full max-w-2xl p-8">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Log in</h1>
-
-        <form id="account" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4" role="alert"></div>
-
+<div class="flex items-start justify-center px-4 pt-12 pb-16">
+    <div style="width: 100%; max-width: 420px;">
+        <div class="bg-white px-8 pt-8 pb-8 shadow-sm rounded-lg border border-gray-200">
+            <h1 class="text-xl font-medium text-gray-900 mb-1">Log in</h1>
             <p class="text-sm text-gray-500 mb-6">Use a local account to log in.</p>
 
-            <!-- Email -->
-            <div class="mb-4">
-                <input asp-for="Input.Email"
-                       class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                       autocomplete="username"
-                       aria-required="true"
-                       placeholder="Email" />
-                <span asp-validation-for="Input.Email" class="text-red-500 text-xs mt-1"></span>
-            </div>
+            <form id="account" method="post" class="space-y-4">
 
-            <!-- Password -->
-            <div class="mb-4">
-                <input asp-for="Input.Password"
-                       class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                       autocomplete="current-password"
-                       aria-required="true"
-                       placeholder="Password" />
-                <span asp-validation-for="Input.Password" class="text-red-500 text-xs mt-1"></span>
-            </div>
+                <div asp-validation-summary="ModelOnly"
+                     class="rounded-md bg-red-50 p-4 text-sm text-red-700" role="alert"></div>
 
-            <!-- Remember Me -->
-            <div class="flex items-center mb-6 gap-2">
-                <input class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-400"
-                       asp-for="Input.RememberMe" />
-                <label asp-for="Input.RememberMe" class="text-sm text-gray-600">
-                    @Html.DisplayNameFor(m => m.Input.RememberMe)
-                </label>
-            </div>
+                <div>
+                    <input asp-for="Input.Email"
+                           class="block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900
+                    border border-gray-300 placeholder:text-gray-400
+                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
+                           autocomplete="username"
+                           aria-required="true"
+                           placeholder="Email" />
+                    <span asp-validation-for="Input.Email" class="mt-1 text-xs text-red-600"></span>
+                </div>
 
-            <!-- Buttons Row -->
-            <div class="flex items-center justify-between">
-                <div class="flex flex-col gap-1 text-sm">
+                <div>
+                    <input asp-for="Input.Password"
+                           class="block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900
+                    border border-gray-300 placeholder:text-gray-400
+                    focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
+                           autocomplete="current-password"
+                           aria-required="true"
+                           placeholder="Password" />
+                    <span asp-validation-for="Input.Password" class="mt-1 text-xs text-red-600"></span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input asp-for="Input.RememberMe"
+                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-400" />
+                    <label asp-for="Input.RememberMe" class="text-sm text-gray-600">
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 mt-2 pb-2 border-t border-gray-100">
                     <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"
-                       class="text-gray-500 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 text-center">
+                       class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium
+                        text-gray-600 hover:bg-gray-50 transition-colors">
                         Register
+                    </a>
+                    <button id="login-submit" type="submit"
+                            class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium
+                        text-white hover:bg-indigo-500 active:scale-[0.99] transition-colors">
+                        Log in
+                    </button>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <a asp-page="./ForgotPassword"
+                       style="width: fit-content;"
+                       class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium
+                        text-gray-600 hover:bg-gray-50 transition-colors">
+                        Forgot password?
+                    </a>
+                    <a asp-page="./ResendEmailConfirmation"
+                       style="width: fit-content;"
+                       class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium
+                        text-gray-600 hover:bg-gray-50 transition-colors">
+                        Resend confirmation
                     </a>
                 </div>
 
-                <button id="login-submit" type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-6 py-2 rounded-lg transition-colors">
-                    Log in
-                </button>
-            </div>
+                @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                {
+                    <hr class="border-gray-100" />
+                    <p class="text-sm text-gray-500">Use another service to log in.</p>
+                    <form id="external-account" asp-page="./ExternalLogin"
+                          asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div class="flex gap-2 flex-wrap">
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                <button type="submit"
+                                        class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium
+                                    text-white hover:bg-indigo-500 transition-colors"
+                                        name="provider" value="@provider.Name">
+                                    @provider.DisplayName
+                                </button>
+                            }
+                        </div>
+                    </form>
+                }
 
-            <!-- Extra Links -->
-            <div class="mt-5 flex flex-col gap-1 text-sm text-indigo-500">
-                <a id="forgot-password" asp-page="./ForgotPassword" class="hover:underline">Forgot your password?</a>
-                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="hover:underline">Resend email confirmation</a>
-            </div>
-
-            <!-- External Logins -->
-            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
-            {
-                <hr class="my-6 border-gray-200" />
-                <p class="text-sm text-gray-500 mb-3">Use another service to log in.</p>
-                <form id="external-account" asp-page="./ExternalLogin"
-                      asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                    <div class="flex gap-2 flex-wrap">
-                        @foreach (var provider in Model.ExternalLogins!)
-                        {
-                            <button type="submit"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg"
-                                    name="provider" value="@provider.Name">
-                                @provider.DisplayName
-                            </button>
-                        }
-                    </div>
-                </form>
-            }
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 

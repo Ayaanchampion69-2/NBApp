@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
+using NBApp.ViewModels;
 using System;
 using System.IO;
 
@@ -16,28 +17,41 @@ namespace NBApp.Controllers
             _context = context;
             _environment = environment;
         }
-        public async Task<IActionResult> Index(int? categoryId, string? searchString)
+        public async Task<IActionResult> Index(int? categoryId, string? searchString, int page = 1, int pageSize = 8)
         {
-            //how many cards per page
-            
-
-
             var productsQuery = _context.Products
                 .Include(p => p.Category)
                 .Where(p => p.IsActive);
+
             if (categoryId.HasValue)
-            {
                 productsQuery = productsQuery.Where(p => p.CategoryId == categoryId.Value);
-            }
+
             if (!string.IsNullOrEmpty(searchString))
-            {
                 productsQuery = productsQuery.Where(p => p.Name.Contains(searchString) ||
-                (p.Description != null && p.Description.Contains(searchString)));
-            }
+                    (p.Description != null && p.Description.Contains(searchString)));
+
+            var totalCount = await productsQuery.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            var products = await productsQuery
+                .OrderBy(p => p.ProductId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
             ViewBag.Categories = await _context.Categories.ToListAsync();
-            ViewBag.CurrentCategoryId = categoryId;
-            ViewBag.CurrentSearchString = searchString;
-            return View(await productsQuery.ToListAsync());
+            ViewBag.CurrentCategory = categoryId;
+            ViewBag.SearchString = searchString;
+
+            var viewModel = new PagedProductsViewModel
+            {
+                Products = products,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+
+            return View(viewModel);
         }
         public async Task<IActionResult> Create()
         {
