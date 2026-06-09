@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ContosoUniversity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +27,10 @@ namespace NBApp.Controllers
         // GET: Order
         public async Task<IActionResult> Index()
         {
+            
+
             if (User.IsInRole("Admin"))
             {
-                // Admin sees all orders
                 var allOrders = _context.Orders
                     .Include(o => o.User)
                     .Include(o => o.OrderItems)
@@ -37,7 +39,6 @@ namespace NBApp.Controllers
             }
             else
             {
-                // Regular user sees only their own orders
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userOrders = _context.Orders
                     .Where(o => o.UserId == userId)
@@ -51,10 +52,7 @@ namespace NBApp.Controllers
         // GET: Order/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var order = await _context.Orders
                 .Include(o => o.User)
@@ -63,28 +61,20 @@ namespace NBApp.Controllers
                     .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
 
-            if (order == null)
-            {
-                return NotFound();
-            }
+            if (order == null) return NotFound();
 
             var viewModel = new OrderViewModel
             {
                 OrderId = order.OrderId,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
-
-                // Flat user fields
+                Status = order.Status,
                 UserId = order.User?.Id ?? "",
                 DisplayName = order.User?.DisplayName ?? "",
-
-                // Flat address fields
                 BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
                 Street = order.ShippingAddress?.Street ?? "",
                 City = order.ShippingAddress?.City ?? "",
                 PostalCode = order.ShippingAddress?.PostalCode ?? "",
-
-                // Order items
                 OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
                 {
                     OrderItemId = oi.OrderItemId,
@@ -106,93 +96,99 @@ namespace NBApp.Controllers
         }
 
         // POST: Order/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("OrderId,OrderDate,TotalAmount")] Order order)
         {
-            // Set the user ID from the currently authenticated user
             order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //if (ModelState.IsValid)
-            //{
             _context.Add(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-            // }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
-            return View(order);
         }
 
         // GET: Order/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.ShippingAddress)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null) return NotFound();
+
+            var viewModel = new OrderViewModel
             {
-                return NotFound();
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
-            return View(order);
+                OrderId = order.OrderId,
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                Status = order.Status,
+                UserId = order.User?.Id ?? "",
+                DisplayName = order.User?.DisplayName ?? "",
+                BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
+                Street = order.ShippingAddress?.Street ?? "",
+                City = order.ShippingAddress?.City ?? "",
+                PostalCode = order.ShippingAddress?.PostalCode ?? "",
+            };
+
+            return View(viewModel);
         }
 
         // POST: Order/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId,OrderDate,TotalAmount,UserId")] Order order)
+        public async Task<IActionResult> Edit(int id, OrderViewModel viewModel)
         {
-            if (id != order.OrderId)
+            if (id != viewModel.OrderId) return NotFound();
+
+            // Clear validation errors for fields not present in the form
+            ModelState.Remove(nameof(OrderViewModel.UserId));
+            ModelState.Remove(nameof(OrderViewModel.DisplayName));
+            ModelState.Remove(nameof(OrderViewModel.OrderItems));
+
+            if (!ModelState.IsValid) return View(viewModel);
+
+            var order = await _context.Orders
+                .Include(o => o.ShippingAddress)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null) return NotFound();
+
+            order.Status = viewModel.Status;
+
+            if (order.ShippingAddress != null)
             {
-                return NotFound();
+                order.ShippingAddress.BuildingNumber = viewModel.BuildingNumber;
+                order.ShippingAddress.Street = viewModel.Street;
+                order.ShippingAddress.City = viewModel.City;
+                order.ShippingAddress.PostalCode = viewModel.PostalCode;
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrderExists(order.OrderId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", order.UserId);
-            return View(order);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!OrderExists(order.OrderId)) return NotFound();
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Order/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var order = await _context.Orders
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+
+            if (order == null) return NotFound();
 
             return View(order);
         }
@@ -204,9 +200,7 @@ namespace NBApp.Controllers
         {
             var order = await _context.Orders.FindAsync(id);
             if (order != null)
-            {
                 _context.Orders.Remove(order);
-            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

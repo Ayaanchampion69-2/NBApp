@@ -196,9 +196,9 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
         
 
 
-            await _signInManager.RefreshSignInAsync(user);
+           /*await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
+            return RedirectToPage();*/
         }
     }
 }

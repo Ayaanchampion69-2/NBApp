@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using NBApp.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +14,9 @@ namespace NBApp.ViewModels
 
         [DataType(DataType.Date)]
         public DateTime OrderDate { get; set; }
+
+        
+        public Order.OrderStatus Status { get; set; } = Order.OrderStatus.Pending;
 
         public decimal TotalAmount { get; set; }
 

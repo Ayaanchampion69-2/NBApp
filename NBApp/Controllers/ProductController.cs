@@ -18,6 +18,10 @@ namespace NBApp.Controllers
         }
         public async Task<IActionResult> Index(int? categoryId, string? searchString)
         {
+            //how many cards per page
+            
+
+
             var productsQuery = _context.Products
                 .Include(p => p.Category)
                 .Where(p => p.IsActive);

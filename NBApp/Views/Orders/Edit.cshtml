@@ -1,54 +1,144 @@
-﻿@model NBApp.Models.Order
+﻿@model NBApp.ViewModels.OrderViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit order";
+
+    var (pillClass, icon, label) = Model.Status switch
+    {
+        Order.OrderStatus.Pending => ("bg-amber-50 text-amber-800 border border-amber-200", "⏳", "Pending"),
+        Order.OrderStatus.Processing => ("bg-blue-50 text-blue-800 border border-blue-200", "⚙", "Processing"),
+        Order.OrderStatus.shipped => ("bg-purple-50 text-purple-800 border border-purple-200", "📦", "Shipped"),
+        Order.OrderStatus.Delivered => ("bg-green-50 text-green-800 border border-green-200", "✓", "Delivered"),
+        Order.OrderStatus.Cancelled => ("bg-red-50 text-red-800 border border-red-200", "✕", "Cancelled"),
+        _ => ("bg-gray-50 text-gray-800 border border-gray-200", "?", "Unknown")
+    };
 }
 
-<h1>Edit</h1>
+<div class="bg-gray-50 p-6 rounded-xl">
 
-<h4>Order</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="OrderId" />
-            <div class="form-group">
-                <label asp-for="OrderDate" class="control-label"></label>
-                <input asp-for="OrderDate" class="form-control" />
-                <span asp-validation-for="OrderDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-           @* <div class="form-group">
-                <label asp-for="BuildningNumber" class="control-label"></label>
-                <input asp-for="BuildingNumber" class="form-control" />
-                <span asp-validation-for="BuildingNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>*@
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    <a asp-action="Index"
+       class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-5">
+        ← Back to orders
+    </a>
+
+    <div class="flex items-start justify-between mb-6 flex-wrap gap-2">
+        <div>
+            <h1 class="text-xl font-medium text-gray-900">Edit order</h1>
+            <p class="text-sm text-gray-400 mt-0.5">
+                Order #@Model.OrderId &nbsp;·&nbsp; @Model.OrderDate.ToString("dd/MM/yyyy")
+            </p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full @pillClass">
+            @icon @label
+        </span>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <form asp-action="Edit" class="max-w-xl">
+        <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mb-4"></div>
+        <input type="hidden" asp-for="OrderId" />
+
+        
+        <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+            <p class="text-sm font-medium text-gray-900 mb-3">
+                Order info
+                <span class="text-xs font-normal text-gray-400 ml-2">read-only</span>
+            </p>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Order ID</p>
+                    <div class="px-3 py-2 bg-gray-50 border border-gray-100 rounded-md text-sm text-gray-500">
+                        #@Model.OrderId
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Order date</p>
+                    <div class="px-3 py-2 bg-gray-50 border border-gray-100 rounded-md text-sm text-gray-500">
+                        @Model.OrderDate.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Customer</p>
+                    <div class="px-3 py-2 bg-gray-50 border border-gray-100 rounded-md text-sm text-gray-500">
+                        @Model.DisplayName
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Total amount</p>
+                    <div class="px-3 py-2 bg-gray-50 border border-gray-100 rounded-md text-sm text-gray-500">
+                        @Model.TotalAmount.ToString("C")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+            <p class="text-sm font-medium text-gray-900 mb-3">Order status</p>
+            <div class="max-w-xs">
+                <label asp-for="Status"
+                       class="block text-sm font-medium text-gray-500 mb-1"></label>
+                <select asp-for="Status"
+                        asp-items="Html.GetEnumSelectList<Order.OrderStatus>()"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </select>
+                <span asp-validation-for="Status" class="text-red-600 text-xs mt-1 block"></span>
+            </div>
+        </div>
+
+       
+        <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
+            <p class="text-sm font-medium text-gray-900 mb-3">Shipping address</p>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label asp-for="BuildingNumber"
+                           class="block text-sm font-medium text-gray-500 mb-1"></label>
+                    <input asp-for="BuildingNumber"
+                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="BuildingNumber" class="text-red-600 text-xs mt-1 block"></span>
+                </div>
+                <div>
+                    <label asp-for="Street"
+                           class="block text-sm font-medium text-gray-500 mb-1"></label>
+                    <input asp-for="Street"
+                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="Street" class="text-red-600 text-xs mt-1 block"></span>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label asp-for="City"
+                           class="block text-sm font-medium text-gray-500 mb-1"></label>
+                    <input asp-for="City"
+                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="City" class="text-red-600 text-xs mt-1 block"></span>
+                </div>
+                <div>
+                    <label asp-for="PostalCode"
+                           class="block text-sm font-medium text-gray-500 mb-1"></label>
+                    <input asp-for="PostalCode"
+                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="PostalCode" class="text-red-600 text-xs mt-1 block"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:opacity-85 transition-opacity">
+                Save changes
+            </button>
+            <a asp-action="Index"
+               class="inline-flex items-center gap-1.5 px-4 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                Back to list
+            </a>
+        </div>
+
+    </form>
+
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

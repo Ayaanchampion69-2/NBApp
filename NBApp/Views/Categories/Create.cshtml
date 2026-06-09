@@ -1,38 +1,43 @@
 ﻿@model NBApp.Models.Category
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New category";
 }
 
-<h1>Create</h1>
+<h1 class="text-2xl font-medium mb-6">New category</h1>
 
-<h4>Category</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+<div class="bg-white border border-gray-200 rounded-xl p-6 max-w-lg">
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mb-4"></div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="mb-4">
+            <label asp-for="Name" class="block text-sm font-medium text-gray-500 mb-1"></label>
+            <input asp-for="Name" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <span asp-validation-for="Name" class="text-red-600 text-xs mt-1 block"></span>
+        </div>
+
+        <div class="mb-6">
+            <label asp-for="Description" class="block text-sm font-medium text-gray-500 mb-1"></label>
+            <textarea asp-for="Description" rows="3"
+                      class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            <span asp-validation-for="Description" class="text-red-600 text-xs mt-1 block"></span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                    class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                Create
+            </button>
+            <a asp-action="Index"
+               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-50">
+                ← Back to list
+            </a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

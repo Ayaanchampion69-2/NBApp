@@ -1,33 +1,40 @@
 ﻿@model NBApp.Models.Category
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete category";
 }
 
-<h1>Delete</h1>
+<h1 class="text-2xl font-medium mb-6">Delete category</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="CategoryId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="max-w-lg">
+    <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-red-800 text-sm flex items-center gap-2 mb-4">
+        ⚠ Are you sure you want to delete this category? This action cannot be undone.
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-6">
+        <dl>
+            <div class="grid grid-cols-[140px_1fr] text-sm py-2 border-b border-gray-100">
+                <dt class="font-medium text-gray-500">@Html.DisplayNameFor(m => m.Name)</dt>
+                <dd>@Html.DisplayFor(m => m.Name)</dd>
+            </div>
+            <div class="grid grid-cols-[140px_1fr] text-sm py-2">
+                <dt class="font-medium text-gray-500">@Html.DisplayNameFor(m => m.Description)</dt>
+                <dd>@Html.DisplayFor(m => m.Description)</dd>
+            </div>
+        </dl>
+
+        <form asp-action="Delete" class="mt-5">
+            <input type="hidden" asp-for="CategoryId" />
+            <div class="flex items-center gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#080808"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 4.6A2.6 2.6 0 0 1 2.6 2h18.8A2.6 2.6 0 0 1 24 4.6v.8A2.6 2.6 0 0 1 21.4 8h-.486L20 18.6c0 1.33-1.07 2.4-2.4 2.4H6.4C5.07 21 4 19.93 4 18.6L3.086 8H2.6A2.6 2.6 0 0 1 0 5.4v-.8ZM2.6 4a.6.6 0 0 0-.6.6v.8a.6.6 0 0 0 .6.6h18.8a.6.6 0 0 0 .6-.6v-.8a.6.6 0 0 0-.6-.6H2.6Zm5.693 6.293a1 1 0 0 1 1.414 0L12 12.586l2.293-2.293a1 1 0 1 1 1.414 1.414L13.414 14l2.293 2.293a1 1 0 0 1-1.414 1.414L12 15.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L10.586 14l-2.293-2.293a1 1 0 0 1 0-1.414Z" fill="#ff0000"></path></g></svg>
+                </button>
+                <a asp-action="Index"
+                   class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-50">
+                    ← Back to list
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
