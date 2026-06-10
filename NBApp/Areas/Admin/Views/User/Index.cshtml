@@ -6,7 +6,6 @@
 
 <div class="p-6 space-y-10">
 
-  
     <section>
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-lg font-medium">Manage users</h2>
@@ -16,7 +15,6 @@
             </a>
         </div>
 
-        
         <div class="flex gap-2 mb-3">
             <div class="relative flex-1">
                 <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -46,38 +44,38 @@
         <p id="result-count" class="text-xs text-gray-400 mb-2 h-4"></p>
 
         <div class="overflow-y-auto max-h-72 rounded-xl border border-gray-200">
-            <table class="w-full text-sm border-collapse">
+            <table class="w-full text-sm border-collapse table-fixed">
                 <colgroup>
-                    <col style="width:35%" />
-                    <col style="width:20%" />
-                    <col style="width:25%" />
-                    <col style="width:20%" />
+                    <col style="width:28%" />
+                    <col style="width:16%" />
+                    <col style="width:13%" />
+                    <col style="width:30%" />
+                    <col style="width:13%" />
                 </colgroup>
                 <thead class="sticky top-0 z-10 bg-gray-50">
                     <tr>
-                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Username</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Display Name</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Roles</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Manage role</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Delete user</th>
+                        <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Email</th>
+                        <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Display name</th>
+                        <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Roles</th>
+                        <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Manage role</th>
+                        <th class="px-3 py-2 text-center text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Remove User</th>
                     </tr>
                 </thead>
                 <tbody id="user-tbody">
                     @if (!Model.Users.Any())
                     {
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-sm text-gray-400">No users found.</td>
+                            <td colspan="5" class="text-center py-6 text-sm text-gray-400">No users found.</td>
                         </tr>
                     }
                     else
                     {
                         @foreach (NBAppUser user in Model.Users)
                         {
-                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors even:bg-slate-50"
+                            <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors odd:bg-white even:bg-gray-50"
                                 data-username="@user.UserName?.ToLower()"
                                 data-roles="@string.Join(",", user.Roles).ToLower()">
 
-                                
                                 <td class="px-3 py-2 text-xs truncate max-w-0" title="@user.UserName">
                                     @user.UserName
                                 </td>
@@ -85,7 +83,6 @@
                                     @user.DisplayName
                                 </td>
 
-                               
                                 <td class="px-3 py-2">
                                     @if (user.Roles.Any())
                                     {
@@ -102,7 +99,6 @@
                                     }
                                 </td>
 
-                               
                                 <td class="px-3 py-2">
                                     <div class="flex flex-wrap gap-1">
                                         @foreach (var role in Model.Roles)
@@ -137,20 +133,17 @@
                                     </div>
                                 </td>
 
-                               
-                                <td class="px-3 py-2">
+                                <td class="px-3 py-2 text-center">
                                     <form method="post"
                                           asp-action="Delete"
                                           asp-route-id="@user.Id">
                                         @Html.AntiForgeryToken()
                                         <button type="submit"
                                                 onclick="return confirm('Delete @user.UserName?')"
-                                                class="flex items-center gap-1 px-2 py-1 text-xs border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                class="inline-flex items-center justify-center w-7 h-7 border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors mx-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
-
-
                                         </button>
                                     </form>
                                 </td>
@@ -192,21 +185,21 @@
         else
         {
             <div class="overflow-y-auto max-h-48 rounded-xl border border-gray-200">
-                <table class="w-full text-sm border-collapse">
+                <table class="w-full text-sm border-collapse table-fixed">
                     <colgroup>
                         <col style="width:70%" />
                         <col style="width:30%" />
                     </colgroup>
                     <thead class="sticky top-0 z-10 bg-gray-50">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Role</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">Actions</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Role</th>
+                            <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var role in Model.Roles)
                         {
-                            <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                            <tr class="border-b border-gray-100 last:border-0 hover:bg-blue-50 transition-colors odd:bg-white even:bg-gray-50">
                                 <td class="px-3 py-2">@role.Name</td>
                                 <td class="px-3 py-2">
                                     <form method="post"
@@ -215,7 +208,10 @@
                                         @Html.AntiForgeryToken()
                                         <button type="submit"
                                                 onclick="return confirm('Delete role @role.Name?')"
-                                                class="flex items-center gap-1 px-2 py-1 text-xs border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
+                                                class="flex items-center gap-1 px-2 py-1 text-xs border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
                                             Delete role
                                         </button>
                                     </form>
