@@ -74,15 +74,27 @@
         
         <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
             <p class="text-sm font-medium text-gray-900 mb-3">Order status</p>
-            <div class="max-w-xs">
-                <label asp-for="Status"
-                       class="block text-sm font-medium text-gray-500 mb-1"></label>
-                <select asp-for="Status"
-                        asp-items="Html.GetEnumSelectList<Order.OrderStatus>()"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </select>
-                <span asp-validation-for="Status" class="text-red-600 text-xs mt-1 block"></span>
-            </div>
+
+            @* ← replace only from here ... *@
+            @if ((bool)(ViewData["CanEditStatus"] ?? false))
+            {
+                <div class="max-w-xs">
+                    <select asp-for="Status"
+                            asp-items="Html.GetEnumSelectList<Order.OrderStatus>()"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </select>
+                    <span asp-validation-for="Status" class="text-red-600 text-xs mt-1 block"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="Status" />
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full @pillClass">
+                    @icon @label
+                </span>
+            }
+            @* ← ... to here *@
+
         </div>
 
        

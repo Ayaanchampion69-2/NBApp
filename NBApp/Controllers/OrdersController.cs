@@ -150,6 +150,7 @@ namespace NBApp.Controllers
                 City = order.ShippingAddress?.City ?? "",
                 PostalCode = order.ShippingAddress?.PostalCode ?? "",
             };
+            ViewData["CanEditStatus"] = User.IsInRole("Admin");
 
             return View(viewModel);
         }
@@ -173,8 +174,11 @@ namespace NBApp.Controllers
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null) return NotFound();
-
-            order.Status = viewModel.Status;
+            if (User.IsInRole("Admin"))
+            
+            {
+                order.Status = viewModel.Status;
+            }
 
             if (order.ShippingAddress != null)
             {
