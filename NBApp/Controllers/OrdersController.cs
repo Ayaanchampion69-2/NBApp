@@ -104,7 +104,7 @@ namespace NBApp.Controllers
 
             return View(viewModel);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Order/Create
         public IActionResult Create()
         {
@@ -115,6 +115,7 @@ namespace NBApp.Controllers
         // POST: Order/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("OrderId,OrderDate,TotalAmount")] Order order)
         {
             order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -28,14 +28,19 @@ namespace NBApp.ViewModels
 
         // Shipping Address
         [Required]
+        [Display(Name ="House Number/Building Number")]
         public string BuildingNumber { get; set; } = "";
 
         [Required]
+        [Display(Name = "Street Name")]
+
         public string Street { get; set; } = "";
 
         [Required]
+        [Display(Name = "City")]
         public string City { get; set; } = "";
-
+        
+        [Display(Name = "Postal Code")]
         public string PostalCode { get; set; } = "";
 
         // Order Items
@@ -49,6 +54,7 @@ namespace NBApp.ViewModels
         public int ProductId { get; set; }
 
         public string ProductName { get; set; } = "";
+        public string? ImageUrl { get; set; }
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]

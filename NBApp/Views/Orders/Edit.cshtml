@@ -7,7 +7,7 @@
     {
         Order.OrderStatus.Pending => ("bg-amber-50 text-amber-800 border border-amber-200", "⏳", "Pending"),
         Order.OrderStatus.Processing => ("bg-blue-50 text-blue-800 border border-blue-200", "⚙", "Processing"),
-        Order.OrderStatus.shipped => ("bg-purple-50 text-purple-800 border border-purple-200", "📦", "Shipped"),
+        Order.OrderStatus.Shipped => ("bg-purple-50 text-purple-800 border border-purple-200", "📦", "Shipped"),
         Order.OrderStatus.Delivered => ("bg-green-50 text-green-800 border border-green-200", "✓", "Delivered"),
         Order.OrderStatus.Cancelled => ("bg-red-50 text-red-800 border border-red-200", "✕", "Cancelled"),
         _ => ("bg-gray-50 text-gray-800 border border-gray-200", "?", "Unknown")
@@ -33,7 +33,7 @@
         </span>
     </div>
 
-    <form asp-action="Edit" class="max-w-xl">
+    <form asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mb-4"></div>
         <input type="hidden" asp-for="OrderId" />
 

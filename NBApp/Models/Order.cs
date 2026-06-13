@@ -11,7 +11,7 @@ namespace NBApp.Models
         {
          Pending,
          Processing,
-         shipped,
+         Shipped,
          Delivered,
          Cancelled
         }

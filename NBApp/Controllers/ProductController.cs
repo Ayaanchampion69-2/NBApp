@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
@@ -53,12 +54,15 @@ namespace NBApp.Controllers
 
             return View(viewModel);
         }
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await _context.Categories.ToListAsync();
             return View();
         }
+        
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(ProductsDto productsDto)
         {
             if (productsDto.ImageFile == null)
@@ -110,7 +114,7 @@ namespace NBApp.Controllers
 
             return View(product);
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var product = _context.Products.Find(id);
@@ -143,6 +147,7 @@ namespace NBApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, ProductsDto productsDto)
         {
             var product = _context.Products.Find(id);
@@ -202,9 +207,9 @@ namespace NBApp.Controllers
 
             return RedirectToAction("Index");
         }
-    
 
-    public IActionResult Delete(int id)
+        [Authorize(Roles = "Admin")]
+        public IActionResult Delete(int id)
     {
         var product = _context.Products.Find(id);
         if (product == null)

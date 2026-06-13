@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NBApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NBApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles ="Admin")]
     public class UserController : Controller
     {
         private UserManager<NBAppUser> _userManager;
