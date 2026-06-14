@@ -149,7 +149,7 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
                 }
 
                 // Save to wwwroot/ProfilePictures/ (change this path to any existing folder you want)
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "ProfilePictures");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "Images/ProfilePictures");
                 Directory.CreateDirectory(uploadsFolder); // creates folder if it doesn't exist
 
                 var fileName = $"{user.Id}_{Guid.NewGuid()}{ext}";
@@ -159,7 +159,7 @@ namespace NBApp.Areas.Identity.Pages.Account.Manage
                     await Input.ProfilePicture.CopyToAsync(stream);
 
                 // This is the URL used in the <img> tag
-                user.ProfilePicturePath = $"/ProfilePictures/{fileName}";
+                user.ProfilePicturePath = $"/Images/ProfilePictures/{fileName}";
             }
 
             // Save DisplayName + ProfilePicturePath in one call

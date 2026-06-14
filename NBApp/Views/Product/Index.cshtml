@@ -5,12 +5,15 @@
     var currentCategory = ViewBag.CurrentCategory as int?;
     var searchString = ViewBag.SearchString as string;
 }
+@if (User.IsInRole("Admin")){
+ 
 <div class="mb-4">
 <a asp-controller="Product" asp-action="Create"
    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
     + Create product
 </a>
 </div>
+}
 <div class="mb-8 flex flex-col sm:flex-row gap-4">
     <form asp-action="Index" method="get" class="flex-1 flex gap-2">
         <input type="hidden" name="categoryId" value="@currentCategory" />
@@ -114,6 +117,8 @@ else
                                 Details
                             </a>
                         </button>
+                        @if (User.IsInRole("Admin"))
+                        { 
                         <button type="button" class="border-1">
                             <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-50">
                                 Edit
@@ -124,6 +129,7 @@ else
                                 Delete
                             </a>
                         </button>
+                        }
                         @if (product.StockQuantity > 0)
                         {
                             <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-1">

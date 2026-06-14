@@ -77,7 +77,7 @@ namespace NBApp.Controllers
             string NewFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
             NewFileName += Path.GetExtension(productsDto.ImageFile!.FileName);
 
-            string imageFullPath = _environment.WebRootPath + "/Products/" + NewFileName;
+            string imageFullPath = _environment.WebRootPath + "/Images/Products/" + NewFileName;
             using (var stream = System.IO.File.Create(imageFullPath))
             {
                 productsDto.ImageFile.CopyTo(stream);
@@ -89,7 +89,7 @@ namespace NBApp.Controllers
                 Description = productsDto.Description,
                 Price = productsDto.Price,
                 SalePrice = productsDto.SalePrice,
-                ImageUrl = "/Products/" + NewFileName,
+                ImageUrl = "/Images/Products/" + NewFileName,
                 ReleaseDate = productsDto.ReleaseDate,
                 StockQuantity = productsDto.StockQuantity,
                 IsActive = productsDto.IsActive,
@@ -173,7 +173,7 @@ namespace NBApp.Controllers
                 string NewFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
                 NewFileName += Path.GetExtension(productsDto.ImageFile.FileName);
 
-                string imageFullPath = _environment.WebRootPath + "/Products/" + NewFileName;
+                string imageFullPath = _environment.WebRootPath + "/Images/Products/" + NewFileName;
                 using (var stream = System.IO.File.Create(imageFullPath))
                 {
                     productsDto.ImageFile.CopyTo(stream);
@@ -188,7 +188,7 @@ namespace NBApp.Controllers
                     }
                 }
 
-                imageUrl = "/Products/" + NewFileName;
+                imageUrl = "/Images/Products/" + NewFileName;
             }
 
             //update product properties

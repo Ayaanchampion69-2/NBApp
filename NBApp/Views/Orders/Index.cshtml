@@ -41,7 +41,7 @@
                                     }
                                     else
                                     {
-                                        <img src="/ProfilePictures/DefaultPfp.png" />
+                                            @item.User.DisplayName?.Substring(0, 1).ToUpper() 
                                     }
                                 </div>
                                 @Html.DisplayFor(m => item.User.DisplayName)

@@ -1,5 +1,4 @@
-﻿﻿
-@model Products
+﻿@model Products
 
 @{
     ViewData["Title"] = Model.Name;
@@ -32,7 +31,7 @@
     <span class="text-sm font-medium text-indigo-600">@Model.Category.Name</span>
     <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">@Model.Name</h1>
     <div height="100" width="100">
-        <img src="@Model.ImageUrl" alt="No Image Available" class="h-full w-full object-cover"  height="100" width="100"/>
+        <img src="@Model.ImageUrl" alt="No Image Available" class="h-full w-full object-cover" height="60" width="60" />
     </div>
 
     <p class="mt-6 text-4xl font-bold tracking-tight text-gray-900">@Model.Price?.ToString("C")</p>
@@ -41,6 +40,26 @@
         <h3 class="sr-only">Description</h3>
         <p class="text-base text-gray-700">@Model.Description</p>
     </div>
+
+    @if (Model.ReleaseDate.HasValue)
+    {
+        <div class="mt-4 flex items-center gap-2 text-sm text-gray-500">
+            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+            <span>
+                @if (Model.ReleaseDate.Value.Date > DateTime.Today)
+                {
+                    <span class="font-medium text-indigo-600">Releases @Model.ReleaseDate.Value.ToString("MMMM d, yyyy")</span>
+                }
+                else
+                {
+                    <span>Released @Model.ReleaseDate.Value.ToString("MMMM d, yyyy")</span>
+                }
+            </span>
+        </div>
+    }
 
     <div class="mt-6">
         @if (Model.StockQuantity > 0)

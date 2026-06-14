@@ -54,6 +54,7 @@ namespace NBApp.ViewModels
         public int ProductId { get; set; }
 
         public string ProductName { get; set; } = "";
+        [ForeignKey("Products")]
         public string? ImageUrl { get; set; }
 
         [Required]

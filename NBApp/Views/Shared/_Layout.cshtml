@@ -96,16 +96,15 @@
                                     @if (SignInManager.IsSignedIn(User))
                                     {
                                         var currentUser = await UserManager.GetUserAsync(User);
-                                        @if (!String.IsNullOrEmpty(currentUser?.ProfilePicturePath))
-                                        {
-                                            <img src="@currentUser.ProfilePicturePath"
-                                                 alt="Profile Picture"
-                                                 class="w-10 h-10 rounded-full object-cover" />
-                                        }
+                                        <img src="@(!String.IsNullOrEmpty(currentUser?.ProfilePicturePath)
+                                                                 ? currentUser.ProfilePicturePath
+                                                                 : "/Images/ProfilePictures/DefaultPfp.png")"
+                                             alt="Profile Picture"
+                                             class="w-10 h-10 rounded-full object-cover" />
                                     }
                                     else
                                     {
-                                        <img src="/ProfilePictures/DefaultPfp.png"
+                                        <img src="/Images/ProfilePictures/DefaultPfp.png"
                                              alt="Default Profile Picture"
                                              class="w-10 h-10 rounded-full object-cover" />
                                     }
