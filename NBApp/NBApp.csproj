@@ -9,6 +9,7 @@
   <ItemGroup>
     <Content Remove="wwwroot\Images\Products\ChocIceCream.jpg" />
     <Content Remove="wwwroot\Images\Products\MangoIceBlock.jpg" />
+    <Content Remove="wwwroot\Images\ProfilePictures\a896cb59-7b75-4701-8843-8e09af398965_6e7e0991-7014-4f65-a4d7-1f802a0d73f1.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +17,8 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="MailKit" Version="4.17.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
