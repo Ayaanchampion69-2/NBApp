@@ -2,7 +2,6 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
-using System.Net.Mail;
 
 public class EmailSender : IEmailSender
 {
@@ -16,12 +15,12 @@ public class EmailSender : IEmailSender
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
         var message = new MimeMessage();
-        message.From.Add(MailboxAddress.Parse(_config["Email:From"]));
+        message.From.Add(MailboxAddress.Parse(_config["Email:From"]!));  // ← add !
         message.To.Add(MailboxAddress.Parse(email));
         message.Subject = subject;
         message.Body = new TextPart("html") { Text = htmlMessage };
 
-        using var smtp = new SmtpClient();
+        using var smtp = new SmtpClient();  // now unambiguous
         await smtp.ConnectAsync(_config["Email:Host"], int.Parse(_config["Email:Port"]!), true);
         await smtp.AuthenticateAsync(_config["Email:Username"], _config["Email:Password"]);
         await smtp.SendAsync(message);

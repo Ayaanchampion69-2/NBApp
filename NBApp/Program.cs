@@ -1,9 +1,11 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,8 @@ builder.Services.AddDefaultIdentity<NBAppUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NBAppContext>();
 
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -25,7 +29,12 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddControllersWithViews();
 
+// after builder.Services.AddControllersWithViews();
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+builder.Services.AddScoped<StripeService>();
 
 var app = builder.Build();
 
