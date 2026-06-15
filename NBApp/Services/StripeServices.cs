@@ -1,34 +1,20 @@
-﻿using Stripe.Checkout;
+﻿using Stripe;
 
 public class StripeService
 {
-    public Session CreateCheckoutSession(string productName, long amountInCents, string successUrl, string cancelUrl)
+    public PaymentIntent CreatePaymentIntent(long amountInCents, string currency = "fjd")
     {
-        var options = new SessionCreateOptions
+        var options = new PaymentIntentCreateOptions
         {
-            PaymentMethodTypes = new List<string> { "card" },
-            LineItems = new List<SessionLineItemOptions>
+            Amount = amountInCents,
+            Currency = currency,
+            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
             {
-                new SessionLineItemOptions
-                {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        Currency = "usd",
-                        UnitAmount = amountInCents, // e.g. 5000 = $50.00
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = productName
-                        }
-                    },
-                    Quantity = 1
-                }
-            },
-            Mode = "payment",
-            SuccessUrl = successUrl,
-            CancelUrl = cancelUrl
+                Enabled = true
+            }
         };
 
-        var service = new SessionService();
+        var service = new PaymentIntentService();
         return service.Create(options);
     }
 }

@@ -6,15 +6,18 @@ using NBApp.Extensions;
 
 using NBApp.Models;
 using NBApp.ViewModels;
+using Stripe;
 using System.Security.Claims;
 using static NBApp.Models.Order;
 
 
 namespace NBApp.Controllers
 {
-    public class CartController(NBAppContext context) : Controller
+    public class CartController(NBAppContext context, StripeService stripeService, IConfiguration config) : Controller
     {
         private readonly NBAppContext _context = context;
+        private readonly StripeService _stripeService = stripeService;
+        private readonly IConfiguration _config = config;
         private const string CartSessionKey = "ShoppingCart";
 
         // GET: Cart
@@ -126,6 +129,11 @@ namespace NBApp.Controllers
                 TempData["Error"] = "Your cart is empty!";
                 return RedirectToAction(nameof(Index));
             }
+            //lines for stripe intergration
+            var intent = _stripeService.CreatePaymentIntent((long)(cart.Total * 100));
+            ViewBag.ClientSecret = intent.ClientSecret;
+            ViewBag.PublishableKey = _config["Stripe:PublishableKey"];
+
             return View(cart);
         }
 
@@ -229,6 +237,84 @@ namespace NBApp.Controllers
         private CartViewModel GetCart()
         {
             return HttpContext.Session.GetObject<CartViewModel>(CartSessionKey) ?? new CartViewModel();
+        }
+
+        [Authorize]
+        public async Task<IActionResult> PaymentSuccess(string buildingNumber, string street, string city, string postalCode)
+        {
+            var cart = GetCart();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!cart.IsEmpty && userId != null)
+            {
+                var shippingAddress = new ShippingAddress
+                {
+                    BuildingNumber = buildingNumber ?? string.Empty,
+                    Street = street ?? string.Empty,
+                    City = city ?? string.Empty,
+                    PostalCode = postalCode ?? string.Empty
+                };
+
+                var order = new Order
+                {
+                    UserId = userId,
+                    OrderDate = DateTime.Now,
+                    TotalAmount = cart.Total,
+                    Status = OrderStatus.Pending,
+                    ShippingAddress = shippingAddress
+                };
+
+                foreach (var cartItem in cart.Items)
+                {
+                    order.OrderItems.Add(new OrderItem
+                    {
+                        ProductId = cartItem.ProductId,
+                        Quantity = cartItem.Quantity,
+                        UnitPrice = cartItem.Price
+                    });
+
+                    var product = await _context.Products.FindAsync(cartItem.ProductId);
+                    if (product != null)
+                        product.StockQuantity -= cartItem.Quantity;
+                }
+
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+                HttpContext.Session.Remove(CartSessionKey);
+
+                return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        //webhook has not yet been configured, code is just there for now.
+
+        [HttpPost]
+        public async Task<IActionResult> Webhook()
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            var webhookSecret = _config["Stripe:WebhookSecret"];
+
+            try
+            {
+                var stripeEvent = EventUtility.ConstructEvent(
+                    json,
+                    Request.Headers["Stripe-Signature"],
+                    webhookSecret
+                );
+
+                if (stripeEvent.Type == "payment_intent.succeeded")
+                {
+                    // save order here as a fallback
+                }
+
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
     }
 }
