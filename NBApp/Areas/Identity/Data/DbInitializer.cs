@@ -34,7 +34,7 @@ namespace NBApp.Areas.Identity.Data
                 Name = "Sample Product 1",
                 Description = "This is a sample product 1.",
                 Price = 19.99m,
-                ImageUrl = "/Products/B&J.jpg",
+                ImageUrl = "/Images/Products/B&J.jpg",
                 StockQuantity = 69,
                 CategoryId = 1
                 },
@@ -43,7 +43,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 2",
                     Description = "This is a sample product 2.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/BlueBell.jpg",
+                    ImageUrl = "/Images/Products/BlueBell.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -52,7 +52,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 3",
                     Description = "This is a sample product 3.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/ChocFrozenYoghurt.jpg",
+                    ImageUrl = "/Images/Products/ChocFrozenYoghurt.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -61,7 +61,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 4",
                     Description = "This is a sample product 4.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/Dreyer.jpg",
+                    ImageUrl = "/Images/Products/Dreyer.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -70,7 +70,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 5",
                     Description = "This is a sample product 5.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/FrozenCoffeeIce.jpg",
+                    ImageUrl = "/Images/Products/FrozenCoffeeIce.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -79,7 +79,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 6",
                     Description = "This is a sample product 6.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/Gelato.jpg",
+                    ImageUrl = "/Images/Products/Gelato.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -88,7 +88,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 7",
                     Description = "This is a sample product 7.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/HazelIceCream.jpg",
+                    ImageUrl = "/Images/Products/HazelIceCream.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -97,7 +97,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 8",
                     Description = "This is a sample product 8.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/KitKatIce.jpg",
+                    ImageUrl = "/Images/Products/KitKatIce.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -106,7 +106,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 9",
                     Description = "This is a sample product 9.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/MagnumRipOff.jpg",
+                    ImageUrl = "/Images/Products/MagnumRipOff.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -115,7 +115,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 10",
                     Description = "This is a sample product 10.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/MatchaIceCream.jpg",
+                    ImageUrl = "/Images/Products/MatchaIceCream.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -124,7 +124,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 11",
                     Description = "This is a sample product 11.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/Popsicle.jpg",
+                    ImageUrl = "/Images/Products/Popsicle.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -133,7 +133,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 12",
                     Description = "This is a sample product 12.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/SnowCone.jpg",
+                    ImageUrl = "/Images/Products/SnowCone.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -142,7 +142,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 13",
                     Description = "This is a sample product 13.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/Chococream.jpg",
+                    ImageUrl = "/Images/Products/Chococream.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 },
@@ -151,7 +151,7 @@ namespace NBApp.Areas.Identity.Data
                     Name = "Sample Product 14",
                     Description = "This is a sample product 14.",
                     Price = 19.99m,
-                    ImageUrl = "/Products/StrawberryIceCream.jpg",
+                    ImageUrl = "/Images/Products/StrawberryIceCream.jpg",
                     StockQuantity = 69,
                     CategoryId = 1
                 }
