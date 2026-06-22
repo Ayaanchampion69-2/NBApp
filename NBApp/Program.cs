@@ -9,6 +9,8 @@ using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("appsettings.secret.json", optional: true, reloadOnChange: true);
+
 builder.Services.AddDbContext<NBAppContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NBAppContextConnection")));
 
