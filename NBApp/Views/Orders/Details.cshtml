@@ -86,7 +86,7 @@
                         <tr class="border-t border-gray-100 hover:bg-gray-50 transition-colors">
                             <td class="px-4 py-3 text-gray-900">@item.ProductName</td>
                             <td class="px-4 py-3">
-                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                @if (!String.IsNullOrEmpty(item.ImageUrl))
                                 {
                                     <img src="@item.ImageUrl" alt="@item.ProductName"
                                          class="w-10 h-10 object-cover rounded-lg" />
