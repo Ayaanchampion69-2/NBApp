@@ -15,7 +15,6 @@ namespace NBApp.ViewModels
         [DataType(DataType.Date)]
         public DateTime OrderDate { get; set; }
 
-        
         public Order.OrderStatus Status { get; set; } = Order.OrderStatus.Pending;
 
         public decimal TotalAmount { get; set; }
@@ -28,20 +27,25 @@ namespace NBApp.ViewModels
 
         // Shipping Address
         [Required]
-        [Display(Name ="House Number/Building Number")]
+        [Display(Name = "House Number/Building Number")]
         public string BuildingNumber { get; set; } = "";
 
         [Required]
         [Display(Name = "Street Name")]
-
         public string Street { get; set; } = "";
 
         [Required]
-        [Display(Name = "City")]
-        public string City { get; set; } = "";
-        
-        [Display(Name = "Postal Code")]
-        public string PostalCode { get; set; } = "";
+        [Display(Name = "Suburb")]
+        public int SuburbID { get; set; }
+
+        // Populated for display only
+        public string SuburbName { get; set; } = "";
+        public string CityName { get; set; } = "";
+        public decimal DeliveryCost { get; set; }
+
+        // For the edit dropdown
+        [ValidateNever]
+        public List<Suburb> Suburbs { get; set; } = new();
 
         // Order Items
         public List<OrderItemViewModel> OrderItems { get; set; } = new();
@@ -54,6 +58,7 @@ namespace NBApp.ViewModels
         public int ProductId { get; set; }
 
         public string ProductName { get; set; } = "";
+
         [ForeignKey("Products")]
         public string? ImageUrl { get; set; }
 

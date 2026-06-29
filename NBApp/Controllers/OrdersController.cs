@@ -1,5 +1,4 @@
-﻿using ContosoUniversity;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,7 @@ namespace NBApp.Controllers
             _context = context;
         }
 
-        // GET: Order
+        // GET: Orders
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
             IQueryable<Order> query;
@@ -66,7 +65,7 @@ namespace NBApp.Controllers
             return View(viewModel);
         }
 
-        // GET: Order/Details/5
+        // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -74,6 +73,8 @@ namespace NBApp.Controllers
             var order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.ShippingAddress)
+                    .ThenInclude(sa => sa.Suburb)
+                        .ThenInclude(s => s.City)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
@@ -90,8 +91,10 @@ namespace NBApp.Controllers
                 DisplayName = order.User?.DisplayName ?? "",
                 BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
                 Street = order.ShippingAddress?.Street ?? "",
-                City = order.ShippingAddress?.City ?? "",
-                PostalCode = order.ShippingAddress?.PostalCode ?? "",
+                SuburbID = order.ShippingAddress?.SuburbID ?? 0,
+                SuburbName = order.ShippingAddress?.Suburb?.SuburbName ?? "",
+                CityName = order.ShippingAddress?.Suburb?.City?.CityName ?? "",
+                DeliveryCost = order.ShippingAddress?.Suburb?.DeliveryCost ?? 0m,
                 OrderItems = order.OrderItems?.Select(oi => new OrderItemViewModel
                 {
                     OrderItemId = oi.OrderItemId,
@@ -104,28 +107,28 @@ namespace NBApp.Controllers
 
             return View(viewModel);
         }
+
+        // GET: Orders/Create
         [Authorize(Roles = "Admin")]
-        // GET: Order/Create
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Order/Create
+        // POST: Orders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("OrderId,OrderDate,TotalAmount")] Order order)
         {
             order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             _context.Add(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Order/Edit/5
+        // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -133,9 +136,16 @@ namespace NBApp.Controllers
             var order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.ShippingAddress)
+                    .ThenInclude(sa => sa.Suburb)
+                        .ThenInclude(s => s.City)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null) return NotFound();
+
+            var suburbs = await _context.Suburbs
+                .Include(s => s.City)
+                .OrderBy(s => s.SuburbName)
+                .ToListAsync();
 
             var viewModel = new OrderViewModel
             {
@@ -147,45 +157,53 @@ namespace NBApp.Controllers
                 DisplayName = order.User?.DisplayName ?? "",
                 BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
                 Street = order.ShippingAddress?.Street ?? "",
-                City = order.ShippingAddress?.City ?? "",
-                PostalCode = order.ShippingAddress?.PostalCode ?? "",
+                SuburbID = order.ShippingAddress?.SuburbID ?? 0,
+                SuburbName = order.ShippingAddress?.Suburb?.SuburbName ?? "",
+                CityName = order.ShippingAddress?.Suburb?.City?.CityName ?? "",
+                DeliveryCost = order.ShippingAddress?.Suburb?.DeliveryCost ?? 0m,
+                Suburbs = suburbs
             };
-            ViewData["CanEditStatus"] = User.IsInRole("Admin");
 
+            ViewData["CanEditStatus"] = User.IsInRole("Admin");
             return View(viewModel);
         }
 
-        // POST: Order/Edit/5
+        // POST: Orders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrderViewModel viewModel)
         {
             if (id != viewModel.OrderId) return NotFound();
 
-            // Clear validation errors for fields not present in the form
             ModelState.Remove(nameof(OrderViewModel.UserId));
             ModelState.Remove(nameof(OrderViewModel.DisplayName));
             ModelState.Remove(nameof(OrderViewModel.OrderItems));
+            ModelState.Remove(nameof(OrderViewModel.Suburbs));
 
-            if (!ModelState.IsValid) return View(viewModel);
+            if (!ModelState.IsValid)
+            {
+                viewModel.Suburbs = await _context.Suburbs
+                    .Include(s => s.City)
+                    .OrderBy(s => s.SuburbName)
+                    .ToListAsync();
+                ViewData["CanEditStatus"] = User.IsInRole("Admin");
+                return View(viewModel);
+            }
 
             var order = await _context.Orders
                 .Include(o => o.ShippingAddress)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null) return NotFound();
+
             if (User.IsInRole("Admin"))
-            
-            {
                 order.Status = viewModel.Status;
-            }
 
             if (order.ShippingAddress != null)
             {
                 order.ShippingAddress.BuildingNumber = viewModel.BuildingNumber;
                 order.ShippingAddress.Street = viewModel.Street;
-                order.ShippingAddress.City = viewModel.City;
-                order.ShippingAddress.PostalCode = viewModel.PostalCode;
+                order.ShippingAddress.SuburbID = viewModel.SuburbID;
             }
 
             try
@@ -201,7 +219,7 @@ namespace NBApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Order/Delete/5
+        // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -215,7 +233,7 @@ namespace NBApp.Controllers
             return View(order);
         }
 
-        // POST: Order/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -228,9 +246,7 @@ namespace NBApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OrderExists(int id)
-        {
-            return _context.Orders.Any(e => e.OrderId == id);
-        }
+        private bool OrderExists(int id) =>
+            _context.Orders.Any(e => e.OrderId == id);
     }
 }

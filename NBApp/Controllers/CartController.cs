@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Extensions;
-
 using NBApp.Models;
 using NBApp.ViewModels;
 using Stripe;
 using System.Security.Claims;
 using static NBApp.Models.Order;
-
 
 namespace NBApp.Controllers
 {
@@ -26,7 +24,6 @@ namespace NBApp.Controllers
             var cart = GetCart();
             return View(cart);
         }
-
 
         // POST: Cart/AddToCart
         [HttpPost]
@@ -63,7 +60,6 @@ namespace NBApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // POST: Cart/UpdateQuantity
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -75,21 +71,15 @@ namespace NBApp.Controllers
             if (item != null)
             {
                 if (quantity <= 0)
-                {
                     cart.Items.Remove(item);
-                }
                 else
-                {
                     item.Quantity = quantity;
-                }
+
                 SaveCart(cart);
             }
 
             return RedirectToAction(nameof(Index));
         }
-
-
-
 
         // POST: Cart/RemoveFromCart
         [HttpPost]
@@ -108,7 +98,6 @@ namespace NBApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // POST: Cart/ClearCart
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -118,10 +107,9 @@ namespace NBApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         // GET: Cart/Checkout
         [Authorize]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             var cart = GetCart();
             if (cart.IsEmpty)
@@ -129,20 +117,23 @@ namespace NBApp.Controllers
                 TempData["Error"] = "Your cart is empty!";
                 return RedirectToAction(nameof(Index));
             }
-            //lines for stripe intergration
+
             var intent = _stripeService.CreatePaymentIntent((long)(cart.Total * 100));
             ViewBag.ClientSecret = intent.ClientSecret;
             ViewBag.PublishableKey = _config["Stripe:PublishableKey"];
 
+            // Load cities and suburbs for dropdowns
+            ViewBag.Cities = await _context.Cities.OrderBy(c => c.CityName).ToListAsync();
+            ViewBag.Suburbs = await _context.Suburbs.Include(s => s.City).OrderBy(s => s.SuburbName).ToListAsync();
+
             return View(cart);
         }
-
 
         // POST: Cart/PlaceOrder
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PlaceOrder(string? buildingNumber, string? street, string? city, string? postalCode)
+        public async Task<IActionResult> PlaceOrder(string? buildingNumber, string? street, int suburbId)
         {
             var cart = GetCart();
             if (cart.IsEmpty)
@@ -153,31 +144,31 @@ namespace NBApp.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-            {
                 return Unauthorized();
+
+            var suburb = await _context.Suburbs.Include(s => s.City).FirstOrDefaultAsync(s => s.SuburbID == suburbId);
+            if (suburb == null)
+            {
+                TempData["Error"] = "Invalid suburb selected.";
+                return RedirectToAction(nameof(Checkout));
             }
 
-            // Create the shipping address
             var shippingAddress = new ShippingAddress
             {
                 BuildingNumber = buildingNumber ?? string.Empty,
                 Street = street ?? string.Empty,
-                City = city ?? string.Empty,
-                PostalCode = postalCode ?? string.Empty
+                SuburbID = suburbId
             };
 
-            // Create the order
             var order = new Order
             {
                 UserId = userId,
                 OrderDate = DateTime.Now,
-                TotalAmount = cart.Total,
+                TotalAmount = cart.Total + (suburb.DeliveryCost ?? 0m),
                 Status = OrderStatus.Pending,
                 ShippingAddress = shippingAddress
             };
 
-
-            // Add order items
             foreach (var cartItem in cart.Items)
             {
                 order.OrderItems.Add(new OrderItem
@@ -187,25 +178,18 @@ namespace NBApp.Controllers
                     UnitPrice = cartItem.Price
                 });
 
-                // Update stock quantity
                 var product = await _context.Products.FindAsync(cartItem.ProductId);
                 if (product != null)
-                {
                     product.StockQuantity -= cartItem.Quantity;
-                }
             }
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Clear the cart
             HttpContext.Session.Remove(CartSessionKey);
-
             TempData["Message"] = "Order placed successfully!";
             return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
         }
-
-
 
         // GET: Cart/OrderConfirmation
         [Authorize]
@@ -215,51 +199,42 @@ namespace NBApp.Controllers
             var order = await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                .Include(o => o.ShippingAddress)
+                .ThenInclude(sa => sa.Suburb)
+                .ThenInclude(s => s.City)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
 
             if (order == null)
-            {
                 return NotFound();
-            }
 
             return View(order);
         }
 
-
-
-        // Helper method to save cart to session
-        private void SaveCart(CartViewModel cart)
-        {
-            HttpContext.Session.SetObject(CartSessionKey, cart);
-        }
-
-        // Helper method to get cart from session
-        private CartViewModel GetCart()
-        {
-            return HttpContext.Session.GetObject<CartViewModel>(CartSessionKey) ?? new CartViewModel();
-        }
-
+        // GET: Cart/PaymentSuccess
         [Authorize]
-        public async Task<IActionResult> PaymentSuccess(string buildingNumber, string street, string city, string postalCode)
+        public async Task<IActionResult> PaymentSuccess(string buildingNumber, string street, int suburbId)
         {
             var cart = GetCart();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!cart.IsEmpty && userId != null)
             {
+                var suburb = await _context.Suburbs.Include(s => s.City).FirstOrDefaultAsync(s => s.SuburbID == suburbId);
+                if (suburb == null)
+                    return RedirectToAction(nameof(Index));
+
                 var shippingAddress = new ShippingAddress
                 {
                     BuildingNumber = buildingNumber ?? string.Empty,
                     Street = street ?? string.Empty,
-                    City = city ?? string.Empty,
-                    PostalCode = postalCode ?? string.Empty
+                    SuburbID = suburbId
                 };
 
                 var order = new Order
                 {
                     UserId = userId,
                     OrderDate = DateTime.Now,
-                    TotalAmount = cart.Total,
+                    TotalAmount = cart.Total + (suburb.DeliveryCost ?? 0m),
                     Status = OrderStatus.Pending,
                     ShippingAddress = shippingAddress
                 };
@@ -288,8 +263,7 @@ namespace NBApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //webhook has not yet been configured, code is just there for now.
-
+        // Webhook (not yet configured)
         [HttpPost]
         public async Task<IActionResult> Webhook()
         {
@@ -316,5 +290,11 @@ namespace NBApp.Controllers
                 return BadRequest();
             }
         }
+
+        private void SaveCart(CartViewModel cart) =>
+            HttpContext.Session.SetObject(CartSessionKey, cart);
+
+        private CartViewModel GetCart() =>
+            HttpContext.Session.GetObject<CartViewModel>(CartSessionKey) ?? new CartViewModel();
     }
 }

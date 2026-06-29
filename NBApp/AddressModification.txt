@@ -1,0 +1,15 @@
+﻿Replace the city and postal code with suburb and City dropdown. This is to add delivery cost that the Admin/Staff can adjust it, delivery cost is based off suburb not city.
+This is to prevent the user from typing random shit
+
+table structure
+
+City
+CID PK
+Name
+
+
+Suburb
+SUID PK
+Name
+DeliveryCost
+CID FK

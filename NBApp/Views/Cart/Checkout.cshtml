@@ -1,40 +1,59 @@
 ﻿@using NBApp.ViewModels
+@using NBApp.Models
 @model CartViewModel
 
 @{
     ViewData["Title"] = "Checkout";
+    var cities = ViewBag.Cities as List<City> ?? new List<City>();
+    var suburbs = ViewBag.Suburbs as List<Suburb> ?? new List<Suburb>();
 }
 
 <h1 class="text-3xl font-bold text-gray-900 mb-6">Checkout</h1>
+
+<script id="suburbs-data" type="application/json">
+    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            suburbs.Select(s => new { s.SuburbID, s.SuburbName, s.CityID, DeliveryCost = s.DeliveryCost })
+    ))
+</script>
 
 <div class="lg:grid lg:grid-cols-2 lg:gap-x-12">
     <div>
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Shipping Information</h2>
             <form id="checkout-form" onsubmit="return false;">
-                <div class="mb-4">
-                    @*<label for="shippingAddress" class="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
-                    <textarea name="shippingAddress" id="shippingAddress" rows="3" required
-                              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
-                              placeholder="Enter your full shipping address"></textarea>
-                              *@
-                    <label for="buildingNumber" class="block text-sm font-medium text-gray-700 mb-2">Building Number</label>
-                    <input type="text" name="buildingNumber" id="buildingNumber" required
-                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
-                           placeholder="Enter your building number" />
-                    <label for="street" class="block text-sm font-medium text-gray-700 mb-2">Street</label>
-                    <input type="text" name="street" id="street" required
-                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
-                           placeholder="Enter your street" />
-                    <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
-                    <input type="text" name="city" id="city" required
-                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
-                           placeholder="Enter your city" />
-                    <label for="postalCode" class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
-                    <input type="text" name="postalCode" id="postalCode"
-                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
-                           placeholder="Enter your postal code" />
+                <div class="mb-4 space-y-4">
+                    <div>
+                        <label for="buildingNumber" class="block text-sm font-medium text-gray-700 mb-2">Building Number</label>
+                        <input type="text" name="buildingNumber" id="buildingNumber" required
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+                               placeholder="Enter your building number" />
+                    </div>
+                    <div>
+                        <label for="street" class="block text-sm font-medium text-gray-700 mb-2">Street</label>
+                        <input type="text" name="street" id="street" required
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+                               placeholder="Enter your street" />
+                    </div>
+                    <div>
+                        <label for="citySelect" class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <select id="citySelect" required
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                            <option value="">-- Select city --</option>
+                            @foreach (var city in cities)
+                            {
+                                <option value="@city.CityID">@city.CityName</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="suburbId" class="block text-sm font-medium text-gray-700 mb-2">Suburb</label>
+                        <select name="suburbId" id="suburbId" required disabled
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border disabled:bg-gray-100 disabled:text-gray-400">
+                            <option value="">-- Select city first --</option>
+                        </select>
+                    </div>
                 </div>
+
                 <div class="border-t border-gray-200 pt-6 mt-6">
                     <h2 class="text-lg font-medium text-gray-900 mb-4">Payment</h2>
                     <div id="payment-element" class="mb-4"></div>
@@ -55,7 +74,6 @@
             Back to Cart
         </a>
     </div>
-
 
     <div>
         <div class="bg-white shadow rounded-lg p-6">
@@ -97,21 +115,25 @@
                     <dt class="text-sm text-gray-600">Surcharge (3%)</dt>
                     <dd class="text-sm font-medium text-gray-900">@Model.Surcharge.ToString("C")</dd>
                 </div>
+                <div class="flex items-center justify-between" id="delivery-row" style="display:none !important;">
+                    <dt class="text-sm text-gray-600">Delivery</dt>
+                    <dd class="text-sm font-medium text-gray-900" id="delivery-cost">$0.00</dd>
+                </div>
                 <div class="flex items-center justify-between border-t border-gray-200 pt-4">
                     <dt class="text-base font-medium text-gray-900">Total</dt>
-                    <dd class="text-base font-medium text-gray-900">@Model.Total.ToString("C")</dd>
+                    <dd class="text-base font-medium text-gray-900" id="order-total">@Model.Total.ToString("C")</dd>
                 </div>
             </dl>
         </div>
     </div>
-
- </div>
+</div>
 
 @section Scripts {
     <div id="stripe-data"
          data-publishable-key="@ViewBag.PublishableKey"
          data-client-secret="@ViewBag.ClientSecret"
          data-return-url="@Url.Action("PaymentSuccess", "Cart", null, Context.Request.Scheme)"
+         data-base-total="@Model.Total"
          style="display:none;">
     </div>
 
