@@ -100,6 +100,7 @@ namespace NBApp.Controllers
                     OrderItemId = oi.OrderItemId,
                     ProductId = oi.ProductId,
                     ProductName = oi.Product?.Name ?? "",
+                    ImageUrl = oi.Product?.ImageUrl ?? "",
                     Quantity = oi.Quantity,
                     UnitPrice = oi.UnitPrice
                 }).ToList() ?? new()

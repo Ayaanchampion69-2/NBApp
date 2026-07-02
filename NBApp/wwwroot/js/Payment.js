@@ -28,12 +28,12 @@
             return;
         }
 
-        const filtered = allSuburbs.filter(s => s.cityID === cityId);
+        const filtered = allSuburbs.filter(s => s.CityID === cityId);
         filtered.forEach(s => {
             const opt = document.createElement('option');
-            opt.value = s.suburbID;
-            opt.textContent = s.suburbName;
-            opt.dataset.cost = s.deliveryCost;
+            opt.value = s.SuburbID;
+            opt.textContent = s.SuburbName;
+            opt.dataset.cost = s.DeliveryCost;
             suburbSelect.appendChild(opt);
         });
 
@@ -69,7 +69,6 @@
             return;
         }
 
-        // Build return URL with address params
         const buildingNumber = encodeURIComponent(document.getElementById('buildingNumber').value);
         const street = encodeURIComponent(document.getElementById('street').value);
         const suburbId = encodeURIComponent(suburbSelect.value);
