@@ -2,55 +2,87 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1" target="_blank">Suspicious Link Click Me</a>.</p>
-</div>
+<div class="max-w-5xl mx-auto px-6">
 
+    <!-- HERO -->
+    <div class="text-center pt-14 pb-10">
+        <p class="text-xs tracking-[0.2em] uppercase text-pink-600 mb-3">Amazing flavours to check out</p>
+        <h1 class="font-serif text-4xl sm:text-5xl font-semibold text-stone-900 mb-3">Welcome to our ice cream shop</h1>
+        <p class="max-w-md mx-auto text-stone-600 mb-6">Made by a local favourite &mdash; Right here in Fiji.</p>
+        <div class="w-12 h-1 bg-indigo-700 mx-auto rounded-full"></div>
+    </div>
 
-<div id="indicators-carousel" class="relative w-full" data-carousel="static">
-    <!-- Carousel wrapper -->
-    <div class="relative h-56 overflow-hidden rounded-base md:h-96">
-        <!-- Item 1 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item="active">
-            <img src="/docs/images/carousel/carousel-1.svg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+    <!-- CAROUSEL -->
+    <div class="mb-14">
+        <div class="relative w-full overflow-hidden rounded-2xl border border-stone-200 bg-white h-64 sm:h-72">
+            <div id="carousel-track" class="flex h-full transition-transform duration-700 ease-in-out">
+                <div class="min-w-full h-full flex items-center justify-center bg-indigo-50">
+                    <img src="/MiscPics/Meme1.jpg" class="h-40 w-auto max-w-[80%] object-cover rounded-lg shadow-sm" alt="Featured flavor 1">
+                </div>
+                <div class="min-w-full h-full flex items-center justify-center bg-pink-50">
+                    <img src="/MiscPics/Meme2.jpg" class="h-40 w-auto max-w-[80%] object-cover rounded-lg shadow-sm" alt="Featured flavor 2">
+                </div>
+                <div class="min-w-full h-full flex items-center justify-center bg-emerald-50">
+                    <img src="/MiscPics/meme3.jpg" class="h-40 w-auto max-w-[80%] object-cover rounded-lg shadow-sm" alt="Featured flavor 3">
+                </div>
+                <div class="min-w-full h-full flex items-center justify-center bg-indigo-50">
+                    <img src="/MiscPics/meme4.jpg" class="h-40 w-auto max-w-[80%] object-cover rounded-lg shadow-sm" alt="Featured flavor 4">
+                </div>
+                <div class="min-w-full h-full flex items-center justify-center bg-pink-50">
+                    <img src="/MiscPics/meme5.jpg" class="h-40 w-auto max-w-[80%] object-cover rounded-lg shadow-sm" alt="Featured flavor 5">
+                </div>
+            </div>
+
+            <button onclick="moveCarousel(-1)" aria-label="Previous slide" class="absolute top-1/2 left-3 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white border border-stone-200 text-indigo-700 flex items-center justify-center text-sm">&#10094;</button>
+            <button onclick="moveCarousel(1)" aria-label="Next slide" class="absolute top-1/2 right-3 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white border border-stone-200 text-indigo-700 flex items-center justify-center text-sm">&#10095;</button>
         </div>
-        <!-- Item 2 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="/docs/images/carousel/carousel-2.svg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+
+        <div id="carousel-dots" class="flex items-center justify-center gap-2 mt-4"></div>
+    </div>
+
+    <!-- ABOUT US -->
+    <div class="rounded-2xl border border-stone-200 bg-white p-8 sm:p-10 flex items-start gap-5 mb-6">
+        <div class="w-11 h-11 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8l1-9a5 5 0 0 0-10 0l1 9Z" /><path d="M9 12h6" /></svg>
         </div>
-        <!-- Item 3 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="/docs/images/carousel/carousel-3.svg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-        </div>
-        <!-- Item 4 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="/docs/images/carousel/carousel-4.svg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-        </div>
-        <!-- Item 5 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="/docs/images/carousel/carousel-5.svg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        <div class="flex-1">
+            <h2 class="font-serif text-2xl text-stone-900 mb-2">About us</h2>
+            <p class="text-stone-600 leading-relaxed">
+                Replace this with a short, friendly description of your company &mdash; who you are, what you do, and why customers should trust you.
+            </p>
         </div>
     </div>
-    <!-- Slider indicators -->
-    <div class="absolute z-30 flex -translate-x-1/2 space-x-3 rtl:space-x-reverse bottom-5 left-1/2">
-        <button type="button" class="w-3 h-3 rounded-base" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-        <button type="button" class="w-3 h-3 rounded-base" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-        <button type="button" class="w-3 h-3 rounded-base" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
-        <button type="button" class="w-3 h-3 rounded-base" aria-current="false" aria-label="Slide 4" data-carousel-slide-to="3"></button>
-        <button type="button" class="w-3 h-3 rounded-base" aria-current="false" aria-label="Slide 5" data-carousel-slide-to="4"></button>
+
+    <!-- LOCATION -->
+    <div class="rounded-2xl border border-stone-200 bg-emerald-50 p-8 sm:p-10 flex items-start gap-5 mb-14">
+        <div class="w-11 h-11 rounded-full bg-white text-emerald-700 flex items-center justify-center flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" /><circle cx="12" cy="11" r="2.3" /></svg>
+        </div>
+        <div class="flex-1">
+            <h2 class="font-serif text-2xl text-stone-900 mb-2">Location</h2>
+            <p id="shop-address" class="text-stone-600 leading-relaxed mb-4">
+                Replace this with your business address, hours, and any directions or parking notes customers might need.
+            </p>
+
+            <details class="group mb-4">
+                <summary class="list-none inline-flex items-center gap-1.5 text-sm font-medium text-indigo-700 cursor-pointer">
+                    Store hours
+                    <svg class="transition-transform group-open:rotate-180" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" /></svg>
+                </summary>
+                <div class="mt-3 text-sm grid grid-cols-[auto_auto] gap-x-8 gap-y-1 text-stone-600">
+                    @*<span>Mon &ndash; Fri</span><span>11:00am &ndash; 8:00pm</span>
+                    <span>Saturday</span><span>11:00am &ndash; 9:00pm</span>
+                    <span>Sunday</span><span>12:00pm &ndash; 7:00pm</span>*@
+                    <span>TBD</span>
+                </div>
+            </details>
+
+            <a id="directions-link" href="#" target="_blank" rel="noopener" data-address="51 Victor Street Avondale Auckland" class="inline-block text-sm font-medium text-white bg-indigo-700 hover:bg-indigo-800 px-4 py-2 rounded-full transition">Get directions</a>
+        </div>
     </div>
-    <!-- Slider controls -->
-    <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-base bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg class="w-5 h-5 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7" /></svg>
-            <span class="sr-only">Previous</span>
-        </span>
-    </button>
-    <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-base bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg class="w-5 h-5 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" /></svg>
-            <span class="sr-only">Next</span>
-        </span>
-    </button>
+
 </div>
+
+@section Scripts {
+    <script src="~/js/HomeCarousel.js"></script>
+}
