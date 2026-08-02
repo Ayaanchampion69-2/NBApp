@@ -39,8 +39,11 @@ namespace NBApp.ViewModels
         public int SuburbID { get; set; }
 
         // Populated for display only
+        [Display(Name ="Suburb Name")]
         public string SuburbName { get; set; } = "";
+        [Display(Name = "City")]
         public string CityName { get; set; } = "";
+        [Display(Name = "Delivery Cost")]
         public decimal DeliveryCost { get; set; }
 
         // For the edit dropdown

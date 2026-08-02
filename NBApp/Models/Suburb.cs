@@ -7,6 +7,7 @@ namespace NBApp.Models
     {
         [Required]
         public int SuburbID { get; set; }
+        [Display(Name ="Suburb Name")]
         public required string SuburbName { get; set; }
         [Range(0, 500, ErrorMessage =
             "Delivery cost must be between 0 and FJD500.")]
