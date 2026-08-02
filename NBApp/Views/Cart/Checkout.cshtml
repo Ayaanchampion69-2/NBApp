@@ -12,7 +12,7 @@
 
 <script id="suburbs-data" type="application/json">
     @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-            suburbs.Select(s => new { s.SuburbID, s.SuburbName, s.CityID, DeliveryCost = s.DeliveryCost })
+                    suburbs.Select(s => new { s.SuburbID, s.SuburbName, s.CityID, DeliveryCost = s.DeliveryCost })
     ))
 </script>
 
@@ -56,12 +56,30 @@
 
                 <div class="border-t border-gray-200 pt-6 mt-6">
                     <h2 class="text-lg font-medium text-gray-900 mb-4">Payment</h2>
+
+                    <!-- Stripe (card) payment -->
                     <div id="payment-element" class="mb-4"></div>
                     <div id="error-message" class="mb-4 text-red-500 text-sm hidden"></div>
                     <button type="button" id="pay-btn"
                             data-label="Pay @Model.Total.ToString("C")"
                             class="w-full rounded-md bg-indigo-600 px-4 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-500">
-                        Pay @Model.Total.ToString("C")
+                        Pay @Model.Total.ToString("C") with Card
+                    </button>
+
+                    <!-- M-PAiSA payment -->
+                    <div class="relative my-4">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="bg-white px-2 text-gray-500">or</span>
+                        </div>
+                    </div>
+
+                    <div id="mpaisa-error-message" class="mb-4 text-red-500 text-sm hidden"></div>
+                    <button type="button" id="mpaisa-pay-btn"
+                            class="w-full rounded-md bg-emerald-600 px-4 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-500">
+                        Pay @Model.Total.ToString("C") with M-PAiSA
                     </button>
                 </div>
             </form>
@@ -127,6 +145,17 @@
         </div>
     </div>
 </div>
+
+<!-- Real POST form for M-PAiSA. Hidden and submitted via JS once the shipping
+     fields above (which live in the Stripe form) pass validation. A real
+     server round-trip is needed here (not fetch/JS) because MPaisaCheckout
+     redirects the browser straight to the M-PAiSA gateway. -->
+<form id="mpaisa-form" asp-action="MPaisaCheckout" asp-controller="Cart" method="post" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="buildingNumber" id="mpaisa-buildingNumber" />
+    <input type="hidden" name="street" id="mpaisa-street" />
+    <input type="hidden" name="suburbId" id="mpaisa-suburbId" />
+</form>
 
 @section Scripts {
     <div id="stripe-data"

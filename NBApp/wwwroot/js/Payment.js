@@ -92,4 +92,30 @@
             btn.textContent = btn.dataset.label;
         }
     });
+
+    // ── M-PAiSA payment ─────────────────────────────────────────────────────
+    const mpaisaBtn = document.getElementById('mpaisa-pay-btn');
+    if (mpaisaBtn) {
+        mpaisaBtn.addEventListener('click', function () {
+            const errorEl = document.getElementById('mpaisa-error-message');
+            const form = document.getElementById('checkout-form');
+            const buildingNumber = document.getElementById('buildingNumber');
+            const street = document.getElementById('street');
+
+            if (!form.checkValidity()) {
+                errorEl.textContent = 'Please fill in your shipping details before paying with M-PAiSA.';
+                errorEl.classList.remove('hidden');
+                form.reportValidity();
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+
+            document.getElementById('mpaisa-buildingNumber').value = buildingNumber.value;
+            document.getElementById('mpaisa-street').value = street.value;
+            document.getElementById('mpaisa-suburbId').value = suburbSelect.value;
+
+            document.getElementById('mpaisa-form').submit();
+        });
+    }
 });

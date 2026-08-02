@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
 using NBApp.Models;
+using NBApp.Services;
 using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddScoped<StripeService>();
+builder.Services.AddScoped<MPaisaService>();
 
 var app = builder.Build();
 
