@@ -38,8 +38,11 @@ namespace NBApp.ViewModels
         [Display(Name = "Suburb")]
         public int SuburbID { get; set; }
 
+        [Display(Name = "City")]
+        public int CityID { get; set; }
+
         // Populated for display only
-        [Display(Name ="Suburb Name")]
+        [Display(Name = "Suburb Name")]
         public string SuburbName { get; set; } = "";
         [Display(Name = "City")]
         public string CityName { get; set; } = "";

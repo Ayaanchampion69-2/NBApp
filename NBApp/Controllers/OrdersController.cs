@@ -92,6 +92,7 @@ namespace NBApp.Controllers
                 BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
                 Street = order.ShippingAddress?.Street ?? "",
                 SuburbID = order.ShippingAddress?.SuburbID ?? 0,
+                CityID = order.ShippingAddress?.Suburb?.CityID ?? 0,
                 SuburbName = order.ShippingAddress?.Suburb?.SuburbName ?? "",
                 CityName = order.ShippingAddress?.Suburb?.City?.CityName ?? "",
                 DeliveryCost = order.ShippingAddress?.Suburb?.DeliveryCost ?? 0m,
@@ -159,12 +160,14 @@ namespace NBApp.Controllers
                 BuildingNumber = order.ShippingAddress?.BuildingNumber ?? "",
                 Street = order.ShippingAddress?.Street ?? "",
                 SuburbID = order.ShippingAddress?.SuburbID ?? 0,
+                CityID = order.ShippingAddress?.Suburb?.CityID ?? 0,
                 SuburbName = order.ShippingAddress?.Suburb?.SuburbName ?? "",
                 CityName = order.ShippingAddress?.Suburb?.City?.CityName ?? "",
                 DeliveryCost = order.ShippingAddress?.Suburb?.DeliveryCost ?? 0m,
                 Suburbs = suburbs
             };
 
+            ViewBag.Cities = await _context.Cities.OrderBy(c => c.CityName).ToListAsync();
             ViewData["CanEditStatus"] = User.IsInRole("Admin");
             return View(viewModel);
         }
@@ -180,6 +183,10 @@ namespace NBApp.Controllers
             ModelState.Remove(nameof(OrderViewModel.DisplayName));
             ModelState.Remove(nameof(OrderViewModel.OrderItems));
             ModelState.Remove(nameof(OrderViewModel.Suburbs));
+            ModelState.Remove(nameof(OrderViewModel.SuburbName));
+            ModelState.Remove(nameof(OrderViewModel.CityName));
+            ModelState.Remove(nameof(OrderViewModel.CityID));
+            ModelState.Remove(nameof(OrderViewModel.DeliveryCost));
 
             if (!ModelState.IsValid)
             {
@@ -187,6 +194,7 @@ namespace NBApp.Controllers
                     .Include(s => s.City)
                     .OrderBy(s => s.SuburbName)
                     .ToListAsync();
+                ViewBag.Cities = await _context.Cities.OrderBy(c => c.CityName).ToListAsync();
                 ViewData["CanEditStatus"] = User.IsInRole("Admin");
                 return View(viewModel);
             }
@@ -202,9 +210,36 @@ namespace NBApp.Controllers
 
             if (order.ShippingAddress != null)
             {
+                var newSuburb = await _context.Suburbs.FindAsync(viewModel.SuburbID);
+                if (newSuburb == null)
+                {
+                    ModelState.AddModelError(nameof(OrderViewModel.SuburbID), "Selected suburb is invalid.");
+                    viewModel.Suburbs = await _context.Suburbs
+                        .Include(s => s.City)
+                        .OrderBy(s => s.SuburbName)
+                        .ToListAsync();
+                    ViewBag.Cities = await _context.Cities.OrderBy(c => c.CityName).ToListAsync();
+                    ViewData["CanEditStatus"] = User.IsInRole("Admin");
+                    return View(viewModel);
+                }
+
+                // Delivery cost is always re-derived server-side from the
+                // selected suburb, never trusted from the posted form.
+                if (order.ShippingAddress.SuburbID != newSuburb.SuburbID)
+                {
+                    var oldSuburb = order.ShippingAddress.SuburbID.HasValue
+                        ? await _context.Suburbs.FindAsync(order.ShippingAddress.SuburbID.Value)
+                        : null;
+
+                    var oldCost = oldSuburb?.DeliveryCost ?? 0m;
+                    var newCost = newSuburb.DeliveryCost ?? 0m;
+
+                    order.TotalAmount += (newCost - oldCost);
+                }
+
                 order.ShippingAddress.BuildingNumber = viewModel.BuildingNumber;
                 order.ShippingAddress.Street = viewModel.Street;
-                order.ShippingAddress.SuburbID = viewModel.SuburbID;
+                order.ShippingAddress.SuburbID = newSuburb.SuburbID;
             }
 
             try

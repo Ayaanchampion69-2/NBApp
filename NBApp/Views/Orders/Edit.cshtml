@@ -37,7 +37,6 @@
         <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mb-4"></div>
         <input type="hidden" asp-for="OrderId" />
 
-        
         <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
             <p class="text-sm font-medium text-gray-900 mb-3">
                 Order info
@@ -71,11 +70,9 @@
             </div>
         </div>
 
-        
         <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
             <p class="text-sm font-medium text-gray-900 mb-3">Order status</p>
 
-            @* ← replace only from here ... *@
             @if ((bool)(ViewData["CanEditStatus"] ?? false))
             {
                 <div class="max-w-xs">
@@ -93,13 +90,17 @@
                     @icon @label
                 </span>
             }
-            @* ← ... to here *@
-
         </div>
 
-       
         <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
             <p class="text-sm font-medium text-gray-900 mb-3">Shipping address</p>
+
+            <script id="suburbs-data" type="application/json">
+                            @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                                            Model.Suburbs.Select(s => new { s.SuburbID, s.SuburbName, s.CityID, DeliveryCost = s.DeliveryCost })
+                            ))
+            </script>
+
             <div class="grid grid-cols-2 gap-3 mb-3">
                 <div>
                     <label asp-for="BuildingNumber"
@@ -116,21 +117,34 @@
                     <span asp-validation-for="Street" class="text-red-600 text-xs mt-1 block"></span>
                 </div>
             </div>
+
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label asp-for="SuburbName"
+                    <label asp-for="CityID"
                            class="block text-sm font-medium text-gray-500 mb-1"></label>
-                    <input asp-for="SuburbName"
-                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <span asp-validation-for="SuburbName" class="text-red-600 text-xs mt-1 block"></span>
+                    <select id="citySelect"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Select city --</option>
+                        @foreach (var city in (ViewBag.Cities as List<City> ?? new List<City>()))
+                        {
+                            <option value="@city.CityID" selected="@(Model.CityID == city.CityID)">@city.CityName</option>
+                        }
+                    </select>
                 </div>
                 <div>
-                    <label asp-for="CityName"
+                    <label asp-for="SuburbID"
                            class="block text-sm font-medium text-gray-500 mb-1"></label>
-                    <input asp-for="CityName"
-                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <span asp-validation-for="CityName" class="text-red-600 text-xs mt-1 block"></span>
+                    <select asp-for="SuburbID" id="suburbSelect" data-current-value="@Model.SuburbID"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400">
+                        <option value="">-- Select suburb --</option>
+                    </select>
+                    <span asp-validation-for="SuburbID" class="text-red-600 text-xs mt-1 block"></span>
                 </div>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between bg-gray-50 border border-gray-100 rounded-md px-3 py-2">
+                <span class="text-sm text-gray-600">Delivery cost</span>
+                <span id="delivery-cost" class="text-sm font-medium text-gray-900">@Model.DeliveryCost.ToString("C")</span>
             </div>
         </div>
 
@@ -153,4 +167,5 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="~/js/OrderEdit.js"></script>
 }
