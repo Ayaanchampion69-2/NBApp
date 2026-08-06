@@ -55,9 +55,9 @@
                 <span asp-validation-for="ReleaseDate" class="text-red-600 text-sm block"></span>
             </div>
             <div>
-              <div>
-                  <img src="/Products/@ViewData["imageUrl"] alt="Alternate Text" />
-              </div>
+                <div>
+                    <img src="@ViewData["imageUrl"]" alt="Current product image" class="h-24 w-24 object-cover rounded-lg border border-gray-300" />
+                </div>  
             </div>
             <div>
                 <label asp-for="ImageFile" class="block text-sm font-medium text-gray-700 mb-1"></label>
