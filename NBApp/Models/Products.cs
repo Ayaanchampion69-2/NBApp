@@ -12,10 +12,10 @@ namespace NBApp.Models
         public int ProductId { get; set; }
 
         [Required]
-        [StringLength(200)]
+        [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(1000)]
+        [StringLength(251)]
         public string? Description { get; set; }
 
         [Required]
@@ -33,9 +33,9 @@ namespace NBApp.Models
 
 
         [Required]
-        [Range(0, int.MaxValue)]
+        [Range(0, 100000)]
         public int? StockQuantity { get; set; }
-
+        [Display(Name ="Is Active")]
         public bool IsActive { get; set; } = true;
 
         public string? SKUNumber { get; set; }
