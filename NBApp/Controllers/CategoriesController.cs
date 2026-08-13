@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
+using NBApp.Authorization;
 using NBApp.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace NBApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
+    [DynamicAuthorize("Catergory.CRUD")]
     public class CategoriesController : Controller
     {
         private readonly NBAppContext _context;

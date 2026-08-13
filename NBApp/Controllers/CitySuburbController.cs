@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
+using NBApp.Authorization;
 using NBApp.Models;
 using NBApp.ViewModels;
 
 namespace NBApp.Controllers
 {
+    [Authorize]
+    [DynamicAuthorize("Location.CRUD")]
     public class CitySuburbController : Controller
     {
         private readonly NBAppContext _db;

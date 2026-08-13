@@ -51,6 +51,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddScoped<StripeService>();
 builder.Services.AddScoped<MPaisaService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 var app = builder.Build();
 

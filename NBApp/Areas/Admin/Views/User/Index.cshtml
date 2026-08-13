@@ -157,6 +157,78 @@
     </section>
 
     <section>
+        <h2 class="text-lg font-medium mb-3">Feature permissions</h2>
+        <p class="text-sm text-gray-500 mb-3">
+            Control which roles can access each protected action. Unchecked roles are blocked. A feature with no roles checked is locked to everyone.
+        </p>
+
+        <div class="overflow-y-auto max-h-72 rounded-xl border border-gray-200">
+            <table class="w-full text-sm border-collapse">
+                <thead class="sticky top-0 z-10 bg-gray-50">
+                    <tr>
+                        <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">
+                            Feature
+                        </th>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <th class="px-3 py-2 text-center text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">
+                                @role.Name
+                            </th>
+                        }
+                        <th class="px-3 py-2 text-center text-[11px] font-medium text-gray-400 border-b border-gray-200 uppercase tracking-wide">
+                            Save
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var feature in Model.Features)
+                    {
+                        var formId = "form-" + feature.FeatureKey.Replace(".", "-");
+                        <tr class="border-b border-gray-100 last:border-0 hover:bg-blue-50 transition-colors odd:bg-white even:bg-gray-50">
+                            <td class="px-3 py-2 text-xs font-medium">
+                                @feature.FeatureKey
+                            </td>
+
+                            @foreach (var role in Model.Roles)
+                            {
+                                <td class="px-3 py-2 text-center">
+                                    <input type="checkbox"
+                                           form="@formId"
+                                           name="selectedRoles"
+                                           value="@role.Name"
+                                           class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-200"
+                                           checked="@(feature.AllowedRoles.Contains(role.Name) ? "checked" : null)" />
+                                </td>
+                            }
+
+                            <td class="px-3 py-2 text-center">
+                                <button type="submit"
+                                        form="@formId"
+                                        class="flex items-center gap-1 px-2 py-1 text-xs border border-blue-300 text-blue-800 rounded-lg hover:bg-blue-50 transition-colors mx-auto">
+                                    Save
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="hidden">
+                            <td colspan="0">
+                                <form id="@formId" method="post" asp-action="UpdatePermissions">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="featureKey" value="@feature.FeatureKey" />
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!Model.Features.Any())
+        {
+            <p class="text-sm text-gray-400 mt-3">No protected features registered yet.</p>
+        }
+    </section>
+
+    <section>
         <h2 class="text-lg font-medium mb-3">Manage roles</h2>
 
         <form method="post" asp-action="CreateRole" class="flex gap-2 items-center mb-4 max-w-sm">

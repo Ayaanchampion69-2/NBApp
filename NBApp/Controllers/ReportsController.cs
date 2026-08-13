@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NBApp.Areas.Identity.Data;
+using NBApp.Authorization;
 using NBApp.Models;
 using static NBApp.Models.Order;
 
 namespace NBApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
+    [DynamicAuthorize("Reports.Details")]
     public class ReportsController : Controller
     {
         private readonly NBAppContext _context;

@@ -6,6 +6,8 @@ using NBApp.Models;
 using NBApp.ViewModels;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
+using NBApp.Authorization;
 
 namespace NBApp.Controllers
 {
@@ -54,7 +56,8 @@ namespace NBApp.Controllers
 
             return View(viewModel);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize]
+        [DynamicAuthorize("Product.Create")]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await _context.Categories.ToListAsync();
@@ -62,7 +65,8 @@ namespace NBApp.Controllers
         }
         
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
+        [DynamicAuthorize("Product.Create")]
         public IActionResult Create(ProductsDto productsDto)
         {
             if (productsDto.ImageFile == null)
@@ -114,7 +118,8 @@ namespace NBApp.Controllers
 
             return View(product);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize]
+        [DynamicAuthorize("Product.Edit")]
         public async Task<IActionResult> Edit(int id)
         {
             var product = _context.Products.Find(id);
@@ -147,7 +152,8 @@ namespace NBApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
+        [DynamicAuthorize("Product.Edit")]
         public IActionResult Edit(int id, ProductsDto productsDto)
         {
             var product = _context.Products.Find(id);
@@ -208,7 +214,8 @@ namespace NBApp.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
+        [DynamicAuthorize("Product.Delete")]
         public IActionResult Delete(int id)
     {
         var product = _context.Products.Find(id);

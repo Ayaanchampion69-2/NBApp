@@ -27,7 +27,8 @@ public class NBAppContext : IdentityDbContext<NBAppUser>
     public DbSet<NBApp.Models.ShippingAddress> ShippingAddresses { get; set; } = default!;
     public DbSet<NBApp.Models.City> Cities { get; set; } = default!;
     public DbSet<NBApp.Models.Suburb> Suburbs { get; set; } = default!;
+    public DbSet<NBApp.Models.FeaturePermission> FeaturePermissions { get; set; } = default!;
 
 
-    
+
 }

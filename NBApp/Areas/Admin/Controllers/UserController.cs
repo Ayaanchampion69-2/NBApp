@@ -3,21 +3,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NBApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using NBApp.Areas.Identity.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace NBApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private UserManager<NBAppUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private readonly NBAppContext _context;
 
 
-        public UserController(UserManager<NBAppUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(UserManager<NBAppUser> userManager, RoleManager<IdentityRole> roleManager, NBAppContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
         }
         public async Task<IActionResult> Index()
         {
@@ -28,10 +32,21 @@ namespace NBApp.Areas.Admin.Controllers
                 user.Roles = await _userManager.GetRolesAsync(user);
                 users.Add(user);
             }
+
+            var existingPermissions = await _context.FeaturePermissions.ToListAsync();
+
             UserViewModel model = new UserViewModel
             {
                 Users = users,
-                Roles = _roleManager.Roles.ToList()
+                Roles = _roleManager.Roles.ToList(),
+                Features = FeatureCatalog.FeatureKeys.Select(fk => new FeaturePermissionRow
+                {
+                    FeatureKey = fk,
+                    AllowedRoles = existingPermissions
+                        .Where(p => p.FeatureKey == fk)
+                        .Select(p => p.RoleName)
+                        .ToList()
+                }).ToList()
             };
 
 
@@ -85,7 +100,7 @@ namespace NBApp.Areas.Admin.Controllers
         public async Task<IActionResult> RemoveFromRole(string userId, string roleName)
         {
             NBAppUser user = await _userManager.FindByIdAsync(userId);
-            if (user != null) 
+            if (user != null)
             {
                 await _userManager.RemoveFromRoleAsync(user, roleName);
             }
@@ -113,6 +128,34 @@ namespace NBApp.Areas.Admin.Controllers
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
             await _roleManager.DeleteAsync(role);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePermissions(string featureKey, List<string> selectedRoles)
+        {
+            if (!FeatureCatalog.FeatureKeys.Contains(featureKey))
+            {
+                TempData["ErrorMessage"] = $"Unknown feature '{featureKey}'.";
+                return RedirectToAction("Index");
+            }
+
+            selectedRoles ??= new List<string>();
+
+            var existing = _context.FeaturePermissions.Where(p => p.FeatureKey == featureKey);
+            _context.FeaturePermissions.RemoveRange(existing);
+
+            foreach (var role in selectedRoles)
+            {
+                _context.FeaturePermissions.Add(new FeaturePermission
+                {
+                    FeatureKey = featureKey,
+                    RoleName = role
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
             return RedirectToAction("Index");
         }
 
