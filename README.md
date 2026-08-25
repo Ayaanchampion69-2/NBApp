@@ -58,17 +58,6 @@ git clone https://github.com/Ayaanchampion69-2/NBApp.git
 cd NBApp/NBApp
 dotnet restore
 npm install
-2. Configure secrets
-
-The app reads sensitive config from .NET User Secrets and appsettings.Secret.json (both git-ignored). Set the following via dotnet user-secrets:
-
-bash
-dotnet user-secrets set "ConnectionStrings:NBAppContextConnection" "<your SQL Server connection string>"
-dotnet user-secrets set "Authentication:Google:ClientSecret" "<value>"
-dotnet user-secrets set "Authentication:Facebook:AppSecret" "<value>"
-dotnet user-secrets set "Stripe:SecretKey" "<value>"
-dotnet user-secrets set "Email:Username" "<value>"
-dotnet user-secrets set "Email:Password" "<value>"
 
 M-PAiSA credentials (merchant ID, hash key) should be stored the same way rather than committed to appsettings.json.
 
