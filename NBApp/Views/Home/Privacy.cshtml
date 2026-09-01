@@ -1,29 +1,87 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>
-    We collect personal information from you, including information about your:
-    name
-    contact information
-    Billing or purchase information
-    Delivery location
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    We collect your personal information in order to:
-    To complete orders
-    deliver orders to locations
-    have order history and invoices
-    have personal information so that order can be referenced to a person
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">@ViewData["Title"]</h1>
+            <p class="mt-2 text-sm text-gray-500">How NBApp collects, uses, and protects your information</p>
+        </div>
 
-    Besides our staff, we share this information with:
-    API's in order to that all API's can complete their tasks.
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-200">
 
-    Providing some information is optional. If you choose not to enter Email, we'll unable to provide invoices.
-    If you choose not to enter Billing Information we'll be unable to complete orders online
-    If you choose not to enter Delivery Location we'll be unable to deliver orders to specified location
-    If you choose not to enter we'll
-    We keep your information safe by storing it in encrypted databases and only admin can access it .
+            <!-- Information We Collect -->
+            <section class="p-6 md:p-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Information We Collect</h2>
+                <p class="text-gray-600 mb-3">We collect personal information from you, including information about your:</p>
+                <ul class="list-disc list-inside space-y-1 text-gray-600">
+                    <li>Name</li>
+                    <li>Contact information</li>
+                    <li>Billing or purchase information</li>
+                    <li>Delivery location</li>
+                </ul>
+            </section>
 
-    You have the right to ask for a copy of any personal information we hold about you, and to ask for it to be corrected if you think it is wrong. If you’d like to ask for a copy of your information, or to have it corrected, please contact us at , or +679 937 0687.
-</p>
+            <!-- Why We Collect It -->
+            <section class="p-6 md:p-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Why We Collect Your Information</h2>
+                <p class="text-gray-600 mb-3">We collect your personal information in order to:</p>
+                <ul class="list-disc list-inside space-y-1 text-gray-600">
+                    <li>Complete orders</li>
+                    <li>Deliver orders to specified locations</li>
+                    <li>Maintain order history and invoices</li>
+                    <li>Reference orders to the correct person</li>
+                </ul>
+            </section>
+
+            <!-- Who We Share It With -->
+            <section class="p-6 md:p-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Who We Share Your Information With</h2>
+                <p class="text-gray-600 mb-2">Besides our staff, we share this information with:</p>
+                <ul class="list-disc list-inside space-y-1 text-gray-600">
+                    <li>Third-party APIs, so they can complete the tasks required to process and deliver your order</li>
+                </ul>
+            </section>
+
+            <!-- Optional Information -->
+            <section class="p-6 md:p-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Optional Information</h2>
+                <p class="text-gray-600 mb-3">Providing some information is optional. However:</p>
+                <ul class="list-disc list-inside space-y-1 text-gray-600">
+                    <li>If you choose not to enter an <strong>email</strong>, we will be unable to provide invoices.</li>
+                    <li>If you choose not to enter <strong>billing information</strong>, we will be unable to complete orders online.</li>
+                    <li>If you choose not to enter a <strong>delivery location</strong>, we will be unable to deliver orders to a specified location.</li>
+                </ul>
+            </section>
+
+            <!-- Security -->
+            <section class="p-6 md:p-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">How We Keep Your Information Safe</h2>
+                <p class="text-gray-600">
+                    We keep your information safe by storing it in encrypted databases, with access restricted to admin users only.
+                </p>
+            </section>
+
+            <!-- Your Rights / Contact -->
+            <section class="p-6 md:p-8 bg-gray-50 rounded-b-lg">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Your Rights</h2>
+                <p class="text-gray-600 mb-4">
+                    You have the right to ask for a copy of any personal information we hold about you, and to ask for it to be corrected if you think it is wrong.
+                    If you'd like to request a copy of your information, or have it corrected, please contact us:
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="mailto:INSERT_EMAIL@nbapp.com" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
+                        Email us
+                    </a>
+                    <a href="tel:+6799370687" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
+                        Call +679 937 0687
+                    </a>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+</div>
