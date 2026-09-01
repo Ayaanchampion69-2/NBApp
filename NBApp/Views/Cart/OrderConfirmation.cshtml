@@ -45,7 +45,11 @@
             {
                 <div class="mb-6">
                     <dt class="text-sm font-medium text-gray-500">Shipping Address</dt>
-                    <dd class="mt-1 text-sm text-gray-900">@Model.ShippingAddress</dd>
+                    <dd class="mt-1 text-sm text-gray-900">@Model.ShippingAddress.BuildingNumber</dd>
+                    <dd class="mt-1 text-sm text-gray-900">@Model.ShippingAddress.Street</dd>
+                    <dd class="mt-1 text-sm text-gray-900">@Model.ShippingAddress.Suburb.SuburbName</dd>
+                    <dd class="mt-1 text-sm text-gray-900">@Model.ShippingAddress.Suburb.City.CityName</dd>
+                    
                 </div>
             }
 

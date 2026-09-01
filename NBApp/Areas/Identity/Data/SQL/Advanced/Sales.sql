@@ -9,7 +9,7 @@ SELECT
     SUM(oi.Quantity * oi.UnitPrice)  AS TotalRevenue,
     ROUND(AVG(oi.UnitPrice), 2)       AS AvgSalePrice
 FROM Products p
-JOIN OrderItems oi ON oi.ProductId = p.ProductId
+JOIN OrderItem oi ON oi.ProductId = p.ProductId
 JOIN Orders     o  ON o.OrderId   = oi.OrderId
                    AND o.Status NOT IN (4)  -- exclude Cancelled
 GROUP BY p.ProductId, p.Name, p.Price

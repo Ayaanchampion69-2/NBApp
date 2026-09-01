@@ -18,8 +18,8 @@ SELECT
     u.DisplayName,
     sa.BuildingNumber,
     sa.Street,
-    sa.City,
-    sa.PostalCode,
+    sa.SuburbID,
+    
     COUNT(oi.OrderItemId) AS LineItems
 FROM StuckOrders so
 JOIN  AspNetUsers    u  ON u.Id              = so.UserId
@@ -28,5 +28,5 @@ LEFT JOIN OrderItem        oi ON oi.OrderId   = so.OrderId
 GROUP BY
     so.OrderId, so.OrderDate, so.DaysWaiting, so.TotalAmount, so.Status,
     u.Email, u.DisplayName,
-    sa.BuildingNumber, sa.Street, sa.City, sa.PostalCode
+    sa.BuildingNumber, sa.Street, sa.SuburbID
 ORDER BY so.DaysWaiting DESC;
