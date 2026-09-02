@@ -55,12 +55,7 @@ namespace NBApp.Validators
                })
                .WithMessage("A product with this name already exists.").When(p => !string.IsNullOrEmpty(p.Name)); // Only check duplicates if name is provided;
 
-            //Date Validation (Past/Future Checks)
-            // Release date must be on or before January 1, 2026
-            RuleFor(p => p.ReleaseDate)
-                .LessThanOrEqualTo(new DateTime(2026, 1, 1))
-                .WithMessage("Release Date must be on or before January 1, 2026.")
-                .When(p => p.ReleaseDate.HasValue);
+           
 
         }
     }
