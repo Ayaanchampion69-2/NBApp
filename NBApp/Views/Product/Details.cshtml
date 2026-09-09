@@ -30,8 +30,8 @@
 <div class="mt-8 lg:mt-0">
     <span class="text-sm font-medium text-indigo-600">@Model.Category.Name</span>
     <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">@Model.Name</h1>
-    <div height="100" width="100">
-        <img src="@Model.ImageUrl" alt="No Image Available" class="h-full w-full object-cover" height="60" width="60" />
+    <div class="mt-4 aspect-square w-full max-w-md overflow-hidden rounded-lg bg-gray-100">
+        <img src="@Model.ImageUrl" alt="@Model.Name" class="h-full w-full object-cover" />
     </div>
 
     <p class="mt-6 text-4xl font-bold tracking-tight text-gray-900">@Model.Price?.ToString("C")</p>

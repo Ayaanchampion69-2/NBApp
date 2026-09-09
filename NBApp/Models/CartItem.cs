@@ -10,7 +10,10 @@ namespace NBApp.Models
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public string? ImageUrl { get; set; }
+        public int StockQuantity { get; set; }
 
         public decimal TotalPrice => Price * Quantity;
+
+        public int MaxOrderableQuantity => Math.Min(StockQuantity, 100);
     }
 }

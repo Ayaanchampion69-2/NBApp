@@ -80,7 +80,7 @@ else
                                     <form asp-action="UpdateQuantity" method="post" class="flex items-center gap-2">
                                         <input type="hidden" name="productId" value="@item.ProductId" />
                                         <label class="text-gray-500">Qty:</label>
-                                        <input type="number" name="quantity" value="@item.Quantity" min="1" max="99" class="w-16 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm px-2 py-1" />
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" max="@item.MaxOrderableQuantity" class="w-16 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm px-2 py-1" />
                                         <button type="submit" class="text-indigo-600 hover:text-indigo-500 font-medium">Update</button>
                                     </form>
 

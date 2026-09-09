@@ -20,11 +20,20 @@ namespace NBApp.Controllers
             _context = context;
             _environment = environment;
         }
-        public async Task<IActionResult> Index(int? categoryId, string? searchString, int page = 1, int pageSize = 8)
+        public async Task<IActionResult> Index(int? categoryId, string? searchString, bool showInactive = false, int page = 1, int pageSize = 8)
         {
+            // Only admins are allowed to actually see inactive products
+            if (showInactive && !User.IsInRole("Admin"))
+            {
+                showInactive = false;
+            }
+
             var productsQuery = _context.Products
                 .Include(p => p.Category)
-                .Where(p => p.IsActive);
+                .AsQueryable();
+
+            if (!showInactive)
+                productsQuery = productsQuery.Where(p => p.IsActive);
 
             if (categoryId.HasValue)
                 productsQuery = productsQuery.Where(p => p.CategoryId == categoryId.Value);
@@ -44,6 +53,7 @@ namespace NBApp.Controllers
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.CurrentCategory = categoryId;
             ViewBag.SearchString = searchString;
+            ViewBag.ShowInactive = showInactive;
 
             var viewModel = new PagedProductsViewModel
             {

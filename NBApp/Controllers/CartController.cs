@@ -19,6 +19,7 @@ namespace NBApp.Controllers
         private readonly MPaisaService _mpaisaService = mpaisaService;
         private readonly IConfiguration _config = config;
         private const string CartSessionKey = "ShoppingCart";
+        private const int MaxOrderQuantity = 100;
 
         // GET: Cart
         public IActionResult Index()
@@ -38,12 +39,24 @@ namespace NBApp.Controllers
                 return NotFound();
             }
 
+            var maxAllowed = GetMaxOrderable(product.StockQuantity);
             var cart = GetCart();
             var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
 
+            var requestedTotal = (existingItem?.Quantity ?? 0) + quantity;
+            var clamped = requestedTotal > maxAllowed;
+            var finalQuantity = clamped ? maxAllowed : requestedTotal;
+
+            if (finalQuantity <= 0)
+            {
+                TempData["Error"] = $"{product.Name} is out of stock.";
+                return RedirectToAction(nameof(Index));
+            }
+
             if (existingItem != null)
             {
-                existingItem.Quantity += quantity;
+                existingItem.Quantity = finalQuantity;
+                existingItem.StockQuantity = product.StockQuantity ?? 0;
             }
             else
             {
@@ -52,20 +65,25 @@ namespace NBApp.Controllers
                     ProductId = product.ProductId,
                     ProductName = product.Name,
                     Price = product.Price ?? 0m,
-                    Quantity = quantity,
-                    ImageUrl = product.ImageUrl
+                    Quantity = finalQuantity,
+                    ImageUrl = product.ImageUrl,
+                    StockQuantity = product.StockQuantity ?? 0
                 });
             }
 
             SaveCart(cart);
-            TempData["Message"] = $"{product.Name} added to cart!";
+
+            TempData["Message"] = clamped
+                ? $"{product.Name} added, but quantity was capped at {maxAllowed} (stock/order limit)."
+                : $"{product.Name} added to cart!";
+
             return RedirectToAction(nameof(Index));
         }
 
         // POST: Cart/UpdateQuantity
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateQuantity(int productId, int quantity)
+        public async Task<IActionResult> UpdateQuantity(int productId, int quantity)
         {
             var cart = GetCart();
             var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
@@ -73,9 +91,28 @@ namespace NBApp.Controllers
             if (item != null)
             {
                 if (quantity <= 0)
+                {
                     cart.Items.Remove(item);
+                }
                 else
-                    item.Quantity = quantity;
+                {
+                    // Re-check live stock rather than trusting the cart's cached value.
+                    var product = await _context.Products.FindAsync(productId);
+                    var maxAllowed = GetMaxOrderable(product?.StockQuantity);
+
+                    if (quantity > maxAllowed)
+                    {
+                        item.Quantity = maxAllowed;
+                        TempData["Error"] = $"Quantity capped at {maxAllowed} for {item.ProductName} (stock/order limit).";
+                    }
+                    else
+                    {
+                        item.Quantity = quantity;
+                    }
+
+                    if (product != null)
+                        item.StockQuantity = product.StockQuantity ?? 0;
+                }
 
                 SaveCart(cart);
             }
@@ -155,6 +192,15 @@ namespace NBApp.Controllers
                 return RedirectToAction(nameof(Checkout));
             }
 
+            // Final stock re-check right before committing the order, in case stock
+            // changed since the cart was last touched.
+            var stockError = await ValidateCartStockAsync(cart);
+            if (stockError != null)
+            {
+                TempData["Error"] = stockError;
+                return RedirectToAction(nameof(Checkout));
+            }
+
             var shippingAddress = new ShippingAddress
             {
                 BuildingNumber = buildingNumber ?? string.Empty,
@@ -216,6 +262,13 @@ namespace NBApp.Controllers
             if (suburb == null)
             {
                 TempData["Error"] = "Invalid suburb selected.";
+                return RedirectToAction(nameof(Checkout));
+            }
+
+            var stockError = await ValidateCartStockAsync(cart);
+            if (stockError != null)
+            {
+                TempData["Error"] = stockError;
                 return RedirectToAction(nameof(Checkout));
             }
 
@@ -409,6 +462,27 @@ namespace NBApp.Controllers
                 return BadRequest();
             }
         }
+
+        // Returns null if every cart item is within stock/order limits, otherwise
+        // an error message describing the first item that failed.
+        private async Task<string?> ValidateCartStockAsync(CartViewModel cart)
+        {
+            foreach (var item in cart.Items)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId);
+                if (product == null || !product.IsActive)
+                    return $"{item.ProductName} is no longer available.";
+
+                var maxAllowed = GetMaxOrderable(product.StockQuantity);
+                if (item.Quantity > maxAllowed)
+                    return $"Only {maxAllowed} of {item.ProductName} available. Please update your cart.";
+            }
+
+            return null;
+        }
+
+        private static int GetMaxOrderable(int? stock) =>
+            Math.Min(stock ?? 0, MaxOrderQuantity);
 
         private void SaveCart(CartViewModel cart) =>
             HttpContext.Session.SetObject(CartSessionKey, cart);

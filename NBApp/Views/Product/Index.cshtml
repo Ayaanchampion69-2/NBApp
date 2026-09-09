@@ -4,20 +4,35 @@
     var categories = ViewBag.Categories as List<NBApp.Models.Category>;
     var currentCategory = ViewBag.CurrentCategory as int?;
     var searchString = ViewBag.SearchString as string;
+    var showInactive = ViewBag.ShowInactive as bool? ?? false;
 }
-@if (User.IsInRole("Admin")){
- 
-<div class="mb-4">
-<a asp-controller="Product" asp-action="Create"
-   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
-    + Create product
-</a>
-</div>
+@if (User.IsInRole("Admin"))
+{
+
+    <div class="mb-4 flex items-center justify-between">
+        <a asp-controller="Product" asp-action="Create"
+           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+            + Create product
+        </a>
+
+        <form asp-action="Index" method="get" class="flex items-center gap-2">
+            <input type="hidden" name="categoryId" value="@currentCategory" />
+            <input type="hidden" name="searchString" value="@searchString" />
+            <input type="hidden" name="page" value="1" />
+            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                <input type="checkbox" name="showInactive" value="true" onchange="this.form.submit()"
+                       checked="@(showInactive ? "checked" : null)"
+                       class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                Show inactive products
+            </label>
+        </form>
+    </div>
 }
 <div class="mb-8 flex flex-col sm:flex-row gap-4">
     <form asp-action="Index" method="get" class="flex-1 flex gap-2">
         <input type="hidden" name="categoryId" value="@currentCategory" />
         <input type="hidden" name="page" value="1" />
+        <input type="hidden" name="showInactive" value="@showInactive" />
         <div class="relative flex-1">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <svg height="10" width="10" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -36,6 +51,7 @@
     <form asp-action="Index" method="get" class="sm:w-64">
         <input type="hidden" name="searchString" value="@searchString" />
         <input type="hidden" name="page" value="1" />
+        <input type="hidden" name="showInactive" value="@showInactive" />
         <select name="categoryId" onchange="this.form.submit()"
                 class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
             <option value="">All Categories</option>
@@ -66,8 +82,14 @@ else
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @foreach (var product in Model.Products)
         {
-            <div class="group relative bg-white rounded-lg shadow overflow-hidden flex flex-col">
-                <div class="aspect-square w-full overflow-hidden bg-gray-200">
+            <div class="group relative bg-white rounded-lg shadow overflow-hidden flex flex-col @(!product.IsActive ? "ring-2 ring-yellow-400" : "")">
+                <div class="aspect-square w-full overflow-hidden bg-gray-200 relative">
+                    @if (!product.IsActive)
+                    {
+                        <span class="absolute top-2 left-2 z-10 inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                            Inactive
+                        </span>
+                    }
                     @if (!string.IsNullOrEmpty(product.ImageUrl))
                     {
                         <img src="@product.ImageUrl" alt="@product.Name" class="h-full w-full object-cover object-center group-hover:opacity-75" height="150" width="151" />
@@ -114,25 +136,25 @@ else
 
                     <div class="mt-4 flex gap-2">
                         <button class="border-1" type="button">
-                            <a asp-action="Details" asp-route-id="@product.ProductId" 
+                            <a asp-action="Details" asp-route-id="@product.ProductId"
                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
                                 Details
                             </a>
                         </button>
                         @if (User.IsInRole("Admin"))
-                        { 
-                        <button type="button" class="border-1">
-                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId"
+                        {
+                            <button type="button" class="border-1">
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.ProductId"
                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:opacity-80 transition-opacity">
                                     Edit
-                            </a>
-                        </button>
-                        <button type="button" class="border-1 text-red-400">
-                            <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" onclick="return confirm('Are you sure you want to delete this product?')" 
+                                </a>
+                            </button>
+                            <button type="button" class="border-1 text-red-400">
+                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.ProductId" onclick="return confirm('Are you sure you want to delete this product?')"
                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-red-50 text-red-600 hover:opacity-80 transition-opacity">
                                     Delete
-                            </a>
-                        </button>
+                                </a>
+                            </button>
                         }
                         @if (product.StockQuantity > 0)
                         {
@@ -162,6 +184,7 @@ else
                    asp-route-page="@(Model.CurrentPage - 1)"
                    asp-route-categoryId="@currentCategory"
                    asp-route-searchString="@searchString"
+                   asp-route-showInactive="@showInactive"
                    class="px-2.5 py-1 rounded-md text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors @(!Model.HasPreviousPage ? "opacity-40 pointer-events-none" : "")">
                     ← Prev
                 </a>
@@ -172,6 +195,7 @@ else
                        asp-route-page="@i"
                        asp-route-categoryId="@currentCategory"
                        asp-route-searchString="@searchString"
+                       asp-route-showInactive="@showInactive"
                        class="px-2.5 py-1 rounded-md text-xs font-medium border transition-colors @(i == Model.CurrentPage ? "bg-indigo-600 text-white border-indigo-600" : "border-gray-200 text-gray-600 hover:bg-gray-50")">
                         @i
                     </a>
@@ -181,6 +205,7 @@ else
                    asp-route-page="@(Model.CurrentPage + 1)"
                    asp-route-categoryId="@currentCategory"
                    asp-route-searchString="@searchString"
+                   asp-route-showInactive="@showInactive"
                    class="px-2.5 py-1 rounded-md text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors @(!Model.HasNextPage ? "opacity-40 pointer-events-none" : "")">
                     Next →
                 </a>
