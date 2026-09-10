@@ -1,31 +1,43 @@
 ﻿@model NBApp.ViewModels.PagedProductsViewModel
+@inject NBApp.Services.IPermissionService PermissionService
 @{
     ViewData["Title"] = "Products";
     var categories = ViewBag.Categories as List<NBApp.Models.Category>;
     var currentCategory = ViewBag.CurrentCategory as int?;
     var searchString = ViewBag.SearchString as string;
     var showInactive = ViewBag.ShowInactive as bool? ?? false;
+    var canCreate = await PermissionService.IsAllowedAsync("Product.Create", User);
+    var canViewInactive = await PermissionService.IsAllowedAsync("Product.Status", User);
 }
-@if (User.IsInRole("Admin"))
+@if (canCreate || canViewInactive)
 {
-
     <div class="mb-4 flex items-center justify-between">
-        <a asp-controller="Product" asp-action="Create"
-           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
-            + Create product
-        </a>
+        @if (canCreate)
+        {
+            <a asp-controller="Product" asp-action="Create"
+               class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                + Create product
+            </a>
+        }
+        else
+        {
+            <span></span>
+        }
 
-        <form asp-action="Index" method="get" class="flex items-center gap-2">
-            <input type="hidden" name="categoryId" value="@currentCategory" />
-            <input type="hidden" name="searchString" value="@searchString" />
-            <input type="hidden" name="page" value="1" />
-            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-                <input type="checkbox" name="showInactive" value="true" onchange="this.form.submit()"
-                       checked="@(showInactive ? "checked" : null)"
-                       class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                Show inactive products
-            </label>
-        </form>
+        @if (canViewInactive)
+        {
+            <form asp-action="Index" method="get" class="flex items-center gap-2">
+                <input type="hidden" name="categoryId" value="@currentCategory" />
+                <input type="hidden" name="searchString" value="@searchString" />
+                <input type="hidden" name="page" value="1" />
+                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                    <input type="checkbox" name="showInactive" value="true" onchange="this.form.submit()"
+                           checked="@(showInactive ? "checked" : null)"
+                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                    Show inactive products
+                </label>
+            </form>
+        }
     </div>
 }
 <div class="mb-8 flex flex-col sm:flex-row gap-4">

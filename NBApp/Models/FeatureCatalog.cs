@@ -7,10 +7,12 @@
             "Product.Create",
             "Product.Edit",
             "Product.Delete",
+            "Product.Status",
             "Order.EditStatus",
             "Location.CRUD",
             "Catergory.CRUD",
             "Reports.Details",
+
         };
     }
 }

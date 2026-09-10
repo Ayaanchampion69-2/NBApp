@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using NBApp.Authorization;
+using NBApp.Services;
 
 namespace NBApp.Controllers
 {
@@ -15,15 +16,17 @@ namespace NBApp.Controllers
     {
         private readonly NBAppContext _context;
         private readonly IWebHostEnvironment _environment;
-        public ProductController(NBAppContext context, IWebHostEnvironment environment)
+        private readonly IPermissionService _permissionService;
+        public ProductController(NBAppContext context, IWebHostEnvironment environment, IPermissionService permissionService)
         {
             _context = context;
             _environment = environment;
+            _permissionService = permissionService;
         }
         public async Task<IActionResult> Index(int? categoryId, string? searchString, bool showInactive = false, int page = 1, int pageSize = 8)
         {
-            // Only admins are allowed to actually see inactive products
-            if (showInactive && !User.IsInRole("Admin"))
+            // Only users with the Product.Status permission are allowed to actually see inactive products
+            if (showInactive && !await _permissionService.IsAllowedAsync("Product.Status", User))
             {
                 showInactive = false;
             }
@@ -73,7 +76,7 @@ namespace NBApp.Controllers
             ViewBag.Categories = await _context.Categories.ToListAsync();
             return View();
         }
-        
+
         [HttpPost]
         [Authorize]
         [DynamicAuthorize("Product.Create")]
@@ -184,7 +187,7 @@ namespace NBApp.Controllers
 
             //update image if new image is uploaded
             string imageUrl = product.ImageUrl ?? string.Empty;
-            if(productsDto.ImageFile != null)
+            if (productsDto.ImageFile != null)
             {
                 string NewFileName = DateTime.Now.ToString("yyyyMMddHHmmss");
                 NewFileName += Path.GetExtension(productsDto.ImageFile.FileName);
@@ -227,30 +230,27 @@ namespace NBApp.Controllers
         [Authorize]
         [DynamicAuthorize("Product.Delete")]
         public IActionResult Delete(int id)
-    {
-        var product = _context.Products.Find(id);
-        if (product == null)
         {
+            var product = _context.Products.Find(id);
+            if (product == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            //delete old image
+            if (!string.IsNullOrEmpty(product.ImageUrl) && !product.ImageUrl.StartsWith("http"))
+            {
+                string imageFullPath = _environment.WebRootPath + product.ImageUrl;
+                if (System.IO.File.Exists(imageFullPath))
+                {
+                    System.IO.File.Delete(imageFullPath);
+                }
+            }
+
+            _context.Products.Remove(product);
+            _context.SaveChanges();
+
             return RedirectToAction("Index");
         }
-
-        //delete old image
-        if (!string.IsNullOrEmpty(product.ImageUrl) && !product.ImageUrl.StartsWith("http"))
-        {
-            string imageFullPath = _environment.WebRootPath + product.ImageUrl;
-            if (System.IO.File.Exists(imageFullPath))
-            {
-                System.IO.File.Delete(imageFullPath);
-            }
-        }
-
-        _context.Products.Remove(product);
-        _context.SaveChanges();
-
-        return RedirectToAction("Index");
     }
-            
-            
-        }
-    }
-
+}
