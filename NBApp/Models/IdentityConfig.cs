@@ -28,7 +28,7 @@ namespace NBApp.Models
                     Email = username,
                     EmailConfirmed = true,
                     DisplayName = "Admin",
-                    ProfilePicturePath = "/Images/ProfilePictures/AdminPfp.png"
+                    ProfilePicturePath = "~/Images/ProfilePictures/AdminPfp.jpg"
                 };
 
                 var result = await userManager.CreateAsync(user, password);

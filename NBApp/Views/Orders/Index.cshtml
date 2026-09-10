@@ -19,6 +19,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">Order date</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">Total amount</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">Account</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">Status</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-gray-100">Action</th>
                 </tr>
             </thead>
@@ -41,11 +42,27 @@
                                     }
                                     else
                                     {
-                                            @item.User.DisplayName?.Substring(0, 1).ToUpper() 
+                                        @item.User.DisplayName?.Substring(0, 1).ToUpper()
                                     }
                                 </div>
                                 @Html.DisplayFor(m => item.User.DisplayName)
                             </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            @{
+                                var statusClass = item.Status switch
+                                {
+                                    NBApp.Models.Order.OrderStatus.Pending => "bg-yellow-50 text-yellow-700",
+                                    NBApp.Models.Order.OrderStatus.Processing => "bg-blue-50 text-blue-700",
+                                    NBApp.Models.Order.OrderStatus.Shipped => "bg-purple-50 text-purple-700",
+                                    NBApp.Models.Order.OrderStatus.Delivered => "bg-green-50 text-green-700",
+                                    NBApp.Models.Order.OrderStatus.Cancelled => "bg-red-50 text-red-600",
+                                    _ => "bg-gray-100 text-gray-600"
+                                };
+                            }
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium @statusClass">
+                                @item.Status
+                            </span>
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-1">
@@ -85,8 +102,8 @@
                         <a asp-action="Index" asp-route-page="@i"
                            class="px-2.5 py-1 rounded-md text-xs font-medium border transition-colors
                             @(i == Model.CurrentPage
-                               ? "bg-blue-600 text-white border-blue-600"
-                               : "border-gray-200 text-gray-600 hover:bg-gray-50")">
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "border-gray-200 text-gray-600 hover:bg-gray-50")">
                             @i
                         </a>
                     }
