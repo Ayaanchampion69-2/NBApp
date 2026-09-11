@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +53,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddScoped<StripeService>();
 builder.Services.AddScoped<MPaisaService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
-
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 var app = builder.Build();
 
 // Seed the database + create admin user in one scope
@@ -64,6 +70,8 @@ using (var scope = app.Services.CreateScope())
     DbInitializer.Initialize(context);
     IdentityConfig.CreateAdminUserAsync(services).GetAwaiter().GetResult(); // moved here
 }
+
+app.UseForwardedHeaders();
 
 app.UseStaticFiles();
 app.UseRouting();
