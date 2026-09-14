@@ -121,7 +121,7 @@ namespace NBApp.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
                 user.DisplayName = Input.DisplayName;
-                user.EmailConfirmed = true;
+               
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
